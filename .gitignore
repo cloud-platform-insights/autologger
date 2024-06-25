@@ -5,6 +5,7 @@ __pycache__/
 
 # Google OAuth credentials
 *token.json
+*credentials.json
 
 # C extensions
 *.so

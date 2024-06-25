@@ -1,18 +1,25 @@
 import os.path
 
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
+
 
 # Scopes for both read and write access to Google Docs
-SCOPES = ["https://www.googleapis.com/auth/documents"]
+SCOPES = [
+    "https://www.googleapis.com/auth/documents",
+    "https://www.googleapis.com/auth/drive.file",
+]
 
 # https://docs.google.com/document/d/1sZ-18GC1Kl5S3zPQgt9ek3xDb465rPdAmOmKDh5iqZQ
 doc_id = "1sZ-18GC1Kl5S3zPQgt9ek3xDb465rPdAmOmKDh5iqZQ"
 
-service = None
+docs_client = None
+drive_client = None  # used for image upload
 
 
 def hex_to_rgb(hex_color):
@@ -27,9 +34,9 @@ def hex_to_rgb(hex_color):
 
 
 def get_document_length(doc_id):
-    global service
+    global docs_client
     """Retrieve the length of the document."""
-    document = service.documents().get(documentId=doc_id).execute()
+    document = docs_client.documents().get(documentId=doc_id).execute()
     doc_content = document.get("body").get("content")
     end_index = doc_content[-1].get("endIndex", 1)  # Default to 1 if not found
     return end_index
@@ -37,9 +44,9 @@ def get_document_length(doc_id):
 
 # returns a tuple of the insert request with follow-up formatting request
 # (API doesn't support formatting text while you insert  🤷‍♀️)
-def build_request(friction_level, text):
+def build_text_request(friction_level, text):
     text = "\n" + text + "\n"
-    global service
+    global docs_client
     eod = get_document_length(doc_id) - 1
 
     highlight_color = "#FFFFFF"
@@ -74,14 +81,49 @@ def build_request(friction_level, text):
     return [insert_request, format_request]
 
 
+# source:
+# https://developers.google.com/docs/api/how-tos/images#python
+def build_image_request(imgpath):
+    global drive_client
+    # step 1 - upload image to google drive via API
+    file_metadata = {"name": os.path.basename(imgpath)}
+    media = MediaFileUpload(imgpath, mimetype="image/png")
+    file = (
+        drive_client.files()
+        .create(body=file_metadata, media_body=media, fields="id")
+        .execute()
+    )
+    image_id = file.get("id")
+    print("✅ Uploaded file to Google Drive: {}".format(image_id))
+
+    # Make the screenshot public (⚠️) - note, docs API needs a public link
+    # https://developers.google.com/docs/api/how-tos/images#python <-- see disclaimer
+    permission = {
+        "type": "anyone",
+        "role": "reader",
+    }
+    drive_client.permissions().create(fileId=image_id, body=permission).execute()
+
+    # step 2 - build request to insert image into google doc
+
+    eod = get_document_length(doc_id) - 1
+
+    drivepath = "https://drive.google.com/uc?id={}".format(image_id)
+    r = {"insertInlineImage": {"location": {"index": eod}, "uri": drivepath}}
+
+    return r
+
+
 def main():
-    global service
+    global docs_client
+    global drive_client
     # -------- AUTH ----------------------------------
     # TLDR: download a credentials.json, let the code create token.json w/ proper scopes
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
+    # NOTE - Creds apply to BOTH the docs and drive APIs
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
     # If there are no (valid) credentials available, let the user log in.
@@ -94,34 +136,34 @@ def main():
         # Save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
-
+    # create clients
     try:
-        service = build("docs", "v1", credentials=creds)
+        docs_client = build("docs", "v1", credentials=creds)
+        drive_client = build("drive", "v3", credentials=creds)
 
         # verify we have access to the doc in question
-        document = service.documents().get(documentId=doc_id).execute()
+        document = docs_client.documents().get(documentId=doc_id).execute()
         print(f"The title of the document is: {document.get('title')}")
 
         reqs = []
         # add green
-        reqs += build_request("GREEN", " This is positive feedback")
-        reqs += build_request("ORANGE", "This is critical feedback")
-        reqs += build_request("RED", "This is a blocker")
+        reqs += build_text_request("GREEN", " This is positive feedback")
+        reqs += build_text_request("ORANGE", "This is critical feedback")
+        reqs += build_text_request("RED", "This is a blocker")
+
+        print("\nInserting local image...")
+        img_path = "../images/term.png"
+        reqs += [build_image_request(img_path)]
 
         # Execute update
-        result = (
-            service.documents()
-            .batchUpdate(
-                documentId=doc_id,
-                body={"requests": reqs},
-            )
-            .execute()
-        )
+        docs_client.documents().batchUpdate(
+            documentId=doc_id,
+            body={"requests": reqs},
+        ).execute()
+        print("✅ Successfully updated document")
 
-        print("The result of the batch update is: {0}".format(result))
-
-    except HttpError as err:
-        print(err)
+    except Exception as err:
+        print("⚠️ Error: {}".format(err))
 
 
 if __name__ == "__main__":
