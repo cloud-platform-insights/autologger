@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Video and image files
+*test_recordings*
+*out*
+*bin*
+*lib*
+*include*
+
 # Google OAuth credentials
 *token.json
 *credentials.json
