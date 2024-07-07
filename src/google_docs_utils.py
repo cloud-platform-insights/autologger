@@ -24,6 +24,31 @@ def get_document_length(docs_client, doc_id):
     return end_index
 
 
+def build_insert_header_request(docs_client, doc_id, header_text, header_level):
+    """Build a request to insert a header into the document."""
+    header_text = header_text + "\n"
+    eod = get_document_length(docs_client, doc_id) - 1
+    insert_request = {
+        "insertText": {
+            "location": {
+                "index": eod,
+            },
+            "text": header_text,
+        }
+    }
+    format_request = {
+        "updateParagraphStyle": {
+            "range": {
+                "startIndex": eod,
+                "endIndex": eod + len(header_text),
+            },
+            "paragraphStyle": {"namedStyleType": "HEADING_{}".format(header_level)},
+            "fields": "namedStyleType",
+        }
+    }
+    return [insert_request, format_request]
+
+
 # returns a tuple of the insert request with follow-up formatting request
 # (API doesn't support formatting text while you insert  🤷‍♀️)
 def build_insert_text_request(docs_client, doc_id, text, friction_level):
@@ -70,6 +95,11 @@ def build_insert_image_request(drive_client, docs_client, doc_id, gcs_url):
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
+
+    # create gcs_downloads dir if not exists
+    if not os.path.exists("./gcs_downloads"):
+        os.makedirs("./gcs_downloads")
+
     # create local path for the image
     # replace all slashes in blob_name with underscores
     local_path = f"./gcs_downloads/{blob_name.replace('/', '_')}"

@@ -13,11 +13,11 @@ def write_clips_to_json(clips, filename="clips.json"):
         json.dump(clips_dict, f, indent=4)
 
 
-# given a local file path (with the long video),break the video into 1-minute chunks- write all chunks to out/ directory
-# also grab a screenshot every 15 seconds (4 screencaps per clip) and write temporarily to local disk
+# given a local file path (with the long video),break the video into 30-second chunks- write all chunks to out/ directory
+# also grab a screenshot every 15 seconds (2 screencaps per clip) and write temporarily to local disk
 # https://stackoverflow.com/questions/67334379/cut-mp4-in-pieces-python
-def chunk_video_and_grab_screenshots(video_path, chunk_length=60):
-    print("🎥 Breaking the recording into 60-second chunks...")
+def chunk_video_and_grab_screenshots(video_path, chunk_length=30):
+    print("🎥 Breaking the recording into 30-second chunks...")
     out_dir = "./out"  # Base output directory
     try:
         video = VideoFileClip(video_path)
@@ -90,5 +90,4 @@ def upload_to_gcs(project_id, bucket_name, folder_prefix, subdir):
     except Exception as e:
         print(f"❌ Error uploading to GCS: {e}")
         return ""
-    print("📤 Uploaded video clip and screenshots to Cloud Storage.")
     return formatted_gcs_video_path, screenshots_paths
