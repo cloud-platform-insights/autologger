@@ -9,6 +9,7 @@ __pycache__/
 *bin*
 *lib*
 *include*
+*src/gcs_downloads/**
 
 # Google OAuth credentials
 *token.json
