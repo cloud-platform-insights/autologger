@@ -185,7 +185,7 @@ def gemini_process(c: Clip, project_id, model_name, sys_inst):
         # SUMMARIZATION WITH SENTIMENT
         print("\n SUMMARIZATION WITH SENTIMENT ANALYSIS....")
         model = model = GenerativeModel(
-            model_name="gemini-1.5-flash-001",
+            model_name=model_name,
             system_instruction=[
                 "You are a friction log generator. A friction log is a written record of a developer's experience. You will be given a video, the video's transcript, and some screenshots. YOUR TASK: summarize the contents of the video, using the transcript and screenshots. Use collective first person, using we pronouns. Be as detailed as possible - up to 4-5 sentences per summary. If you see hyperlinks or code, include them in your summary - not as part of the 5 sentence count. IMPORTANT: Tag sentiment as follows: ✅ Positive (This went well). ⚠️ Some developer friction (This was challenging). ❌ Significant developer friction (This was a blocker). If the summary is neutral sentiment, do not use any emoji. Always put the emoji at the BEGINNING of the summary. It should be the first character.",
                 sys_inst,
