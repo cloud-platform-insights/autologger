@@ -1,224 +1,217 @@
-from google.cloud import storage
-from moviepy.editor import VideoFileClip
-from vertexai.generative_models import GenerativeModel, Part
-from video_utils import (
-    chunk_video_and_grab_screenshots,
-    upload_to_gcs,
-    write_clips_to_json,
-)
-from google_docs_utils import (
-    build_insert_text_request,
-    build_insert_image_request,
-    build_insert_header_request,
-)
+import configparser
+import imageio
 import json
+import logging
 import os
+import os.path
+import sys
 import time
-import vertexai
+
 from clip import Clip
+from mdutils.mdutils import MdUtils
+from mdutils.tools.Html import Html
+from moviepy.editor import VideoFileClip
 
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
 
-# GOOGLE CLOUD APIS CONFIG
-project_id = "cpet-sandbox"
-bucket_name = "cpet-autologger"
-model_name = "gemini-1.5-flash-001"
-fl_description = "You are an automated Friction Log generator. Your job is to take a recording or transcript, and summarize the developer's journey on a specific task: each step, with the highs and lows (sentiment) of their experience."
-# GOOGLE DRIVE / DOCS API CONFIG
-docs_client = None
-drive_client = None
-SCOPES = [
-    "https://www.googleapis.com/auth/documents",
-    "https://www.googleapis.com/auth/drive.file",
-]
-
-# ⭐ CONFIGURE THESE FOR EACH FL TOPIC
-doc_id = "14s-sKUJLlXYcn6RxFt5sDXrKnMbKejH0YivRHEFeuiA"
-gcs_folder_prefix = "java-cloudrun-" + str(int(time.time()))
+from google.cloud import storage
+import vertexai.preview
+from vertexai.generative_models import GenerativeModel, Part
 
 
-####### -------- GEMINI ON VERTEX HELPERS  ----------------- #######
-# gets the full text transcript for a 1 minute video chunk
-def get_transcript(video_gcs_path):
-    global project_id
-    global fl_description
-    global model_name
+#  🎞️ VIDEO / SCREENSHOT HELPERS  🎞️
+def write_clips_to_json(clips, filename="clips.json"):
+    clips_dict = [clip.to_dict() for clip in clips]
+    with open(filename, "w") as f:
+        json.dump(clips_dict, f, indent=4)
+
+
+# splits the input video into [interval]-second clips. grabs 2 screenshots per clip.
+def split_video_and_grab_screenshots(video_path, clip_length):
+    logging.info("🎥 Breaking your video into {}-second clips.".format(clip_length))
+    clip_length = int(clip_length)
+    out_dir = "./clips"  # Base output directory
 
     try:
-        vertexai.init(project=project_id, location="us-central1")
-        model = GenerativeModel(model_name=model_name)
+        video = VideoFileClip(video_path)
+        duration = video.duration
+        start_time = 0
+        clip_index = 0
 
-        prompt = """
-        Transcribe this one-minute video, word for word. Add punctuation to improve readability - avoid run on sentences. Return ONLY the exact transcript."""
+        while start_time < duration:
+            end_time = min(start_time + clip_length, duration)
+            clip = video.subclip(start_time, end_time)
+            clip_dir = f"{out_dir}/clip_{clip_index}"
+            if not os.path.exists(clip_dir):
+                os.makedirs(clip_dir)
+            clip_file_name = f"{clip_dir}/video.mp4"
+            clip.write_videofile(clip_file_name, codec="libx264", audio_codec="aac")
 
-        video_file = Part.from_uri(video_gcs_path, mime_type="video/mp4")
-        contents = [video_file, prompt]
-        response = model.generate_content(contents)
+            # Capture and save screenshots every 30 seconds within the clip
+            for screenshot_time in range(
+                0, min(clip_length, int(end_time - start_time)), 30
+            ):
+                screenshot = clip.get_frame(screenshot_time)
+                screenshot_file_name = (
+                    f"{clip_dir}/screenshot_{screenshot_time//30}.jpg"
+                )
+                imageio.imwrite(screenshot_file_name, screenshot)
+            start_time += clip_length
+            clip_index += 1
     except Exception as e:
-        print(f"❌ Error getting transcript: {e}")
-        return ""
-    transcript = response.text
-    transcript = transcript.strip()
-    return transcript
+        logging.error(f"❌ Error breaking video into clips: {e}")
+        sys.exit(1)
+    logging.info(
+        "✂️ Successfully split video into clips + grabbed screenshots. Ready for Gemini processing."
+    )
 
 
-# https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/image-understanding#send-images
-def get_summary(transcript, screenshots_paths):
-    global project_id
-    global bucket_name
-    global fl_description
-    global model_name
-
-    try:
-        vertexai.init(project=project_id, location="us-central1")
-        model = GenerativeModel(model_name=model_name)
-        prompt_contents = []
-        text_prompt = """
-        {}
-        YOUR TASK: Generate a 2-4 sentence summary of what this developer did, based on the transcript and accompanying screenshots. Be as detailed as possible. 
-        
-        RETURN A SUMMARY IN FIRST PERSON using the "We" pronoun, for example: "We tried to ... " 
-        
-        TRANSCRIPT: {}
-        """.format(
-            fl_description, transcript
-        )
-        prompt_contents.append(text_prompt)
-        for sp in screenshots_paths:
-            prompt_contents.append(Part.from_uri(sp, mime_type="image/jpeg"))
-        response = model.generate_content(prompt_contents)
-    except Exception as e:
-        print(f"❌ Error getting summary: {e}")
-        return []
-    summary = response.text.strip()
-    return response.text
-
-
-def get_sentiment(transcript, screenshots_paths, summary):
-    global project_id
-    global fl_description
-    global model_name
-
-    try:
-        vertexai.init(project=project_id, location="us-central1")
-        model = GenerativeModel(model_name=model_name)
-        prompt_contents = []
-        text_prompt = """
-        {}
-        YOUR TASK: Given a video transcript, paragraph summary, and a selection of screenshots, evaluate the SENTIMENT of this video clip.  
-        Return ONLY one of the following values: NEUTRAL, POSITIVE, SOMEWHAT_NEGATIVE, VERY_NEGATIVE. 
-        
-        TRANSCRIPT: {} 
-        
-        SUMMARY: {}
-        """.format(
-            fl_description, transcript, summary
-        )
-        prompt_contents.append(text_prompt)
-        for sp in screenshots_paths:
-            prompt_contents.append(Part.from_uri(sp, mime_type="image/jpeg"))
-        response = model.generate_content(prompt_contents)
-    except Exception as e:
-        print(f"❌ Error getting sentiment: {e}")
-        return []
-    return response.text.strip()
-
-
-####### ---------------- GOOGLE DOCS MAGIC  --------------------------------
-def generate_friction_log(clips):
-    # Init Google Drive / Docs Clients
-    global docs_client
-    global drive_client
-    global doc_id
+def build_google_drive_client():
     creds = None
+    scopes = [
+        "https://www.googleapis.com/auth/drive.file",
+    ]
     if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+        creds = Credentials.from_authorized_user_file("token.json", scopes)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", scopes)
             creds = flow.run_local_server(port=0)
         with open("token.json", "w") as token:
             token.write(creds.to_json())
     try:
-        docs_client = build("docs", "v1", credentials=creds)
         drive_client = build("drive", "v3", credentials=creds)
-        document = docs_client.documents().get(documentId=doc_id).execute()
-        print(f"The title of the document is: {document.get('title')}")
     except Exception as e:
-        print("❌ Error initializing Google Docs/Drive API client: {}".format(e))
-        return
+        print("❌ Error initializing Google Drive API client: {}".format(e))
+        sys.exit(1)
+    return drive_client
 
-    # we'll do a batch update. reqs = all the Docs API requests:
-    reqs = []
 
-    # Insert summaries with screenshots
-    reqs.append(
-        build_insert_header_request(
-            docs_client, doc_id, "Friction Log Draft - Generated by Autologger", 2
-        )
-    )
-    reqs.append(build_insert_text_request(docs_client, doc_id, "\n", "NEUTRAL"))
-    reqs = reqs[::-1]
+# upload both screenshots and video to Google Cloud Storage bucket (for Vertex AI Gemini inference)
+def upload_to_drive_gcs(project_id, bucket_name, c: Clip, folder_prefix, subdir):
+    formatted_video_gcs_path = ""
+    local_directory = "./clips"
+    storage_client = storage.Client(project=project_id)
+    bucket = storage_client.bucket(bucket_name)
+    target_directory = "{}/{}".format(folder_prefix, subdir)
+
+    drive_client = build_google_drive_client()
+    video_gcs_path = ""
+    ss_gcs_paths = []
+    ss_drive_paths = []
+
     try:
-        docs_client.documents().batchUpdate(
-            documentId=doc_id,
-            body={"requests": reqs},
-        ).execute()
-    except Exception as err:
-        print("⚠️ Error writing to Google Docs: {}".format(err))
+        for screenshot in os.listdir(f"./clips/{subdir}"):
+            # SCREENSHOTS --> GCS and DRIVE
+            if screenshot.endswith(".jpg"):
+                sp = f"{target_directory}/screenshots/{screenshot}"
+                ss_gcs_paths.append("gs://{}/{}".format(bucket_name, sp))
+                blob = bucket.blob(sp)
+                local_path = f"{local_directory}/{subdir}/{screenshot}"
+                logging.debug("🖼️ Uploading screenshot to GCS: " + sp)
+                blob.upload_from_filename(local_path)
+                logging.debug(
+                    f"⬆️ Uploaded {screenshot} to Google Cloud Storage, bucket: {bucket_name}, directory: {target_directory}"
+                )
+                file_metadata = {
+                    "name": c.topic
+                    + "_"
+                    + str(c.clip_number)
+                    + "_"
+                    + os.path.basename(local_path)
+                }
+                logging.debug(
+                    "💿 Uploading screenshot to Google Drive: {}".format(file_metadata)
+                )
 
-    for c in clips:
-        reqs = []
-        # Insert summary
-        reqs.append(
-            build_insert_text_request(docs_client, doc_id, c.summary, c.sentiment)
-        )
-        # Insert screenshots
-        for sp in sorted(c.screenshots_paths):
-            reqs.append(
-                build_insert_image_request(drive_client, docs_client, doc_id, sp)
-            )
-        reqs = reqs[::-1]
-        try:
-            docs_client.documents().batchUpdate(
-                documentId=doc_id,
-                body={"requests": reqs},
-            ).execute()
-        except Exception as err:
-            print("⚠️ Error writing to Google Docs: {}".format(err))
+                media = MediaFileUpload(local_path, mimetype="image/jpg")
+                file = (
+                    drive_client.files()
+                    .create(body=file_metadata, media_body=media, fields="id")
+                    .execute()
+                )
+                image_id = file.get("id")
+                print("✅ Uploaded screenshot to Google Drive: {}".format(image_id))
+                ss_drive_paths.append("https://drive.google.com/uc?id=" + image_id)
 
-    reqs = []
-    # Insert raw transcript at the end of the doc
-    reqs.append(
-        build_insert_header_request(docs_client, doc_id, "Appendix: Raw Transcript", 3)
-    )
-    for c in clips:
-        reqs.append(
-            build_insert_text_request(docs_client, doc_id, c.transcript, "NEUTRAL")
-        )
-    # reverse the order of reqs
-    reqs = reqs[::-1]
+                # Make the screenshot public (⚠️) - note, Google docs needs a public link
+                # https://developers.google.com/docs/api/how-tos/images#python <-- see disclaimer
+                permission = {
+                    "type": "anyone",
+                    "role": "reader",
+                }
+                drive_client.permissions().create(
+                    fileId=image_id, body=permission
+                ).execute()
+
+            # VIDEO --> GCS
+            else:
+                video_gcs_path = f"{target_directory}/video.mp4"
+                blob = bucket.blob(video_gcs_path)
+                blob.upload_from_filename(f"./clips/{subdir}/video.mp4")
+                video_gcs_path = "gs://{}/{}".format(bucket_name, video_gcs_path)
+                logging.debug("🎥 Uploaded video to GCS: " + video_gcs_path)
+
+    except Exception as e:
+        logging.error(f"❌ Error on upload: {e}")
+        return ""
+    return video_gcs_path, ss_gcs_paths, ss_drive_paths
+
+
+def gemini_process(c: Clip, project_id, model_name, sys_inst):
+    print("\n\n 🚀 Processing with Gemini. c: {}".format(c))
     try:
-        docs_client.documents().batchUpdate(
-            documentId=doc_id,
-            body={"requests": reqs},
-        ).execute()
-    except Exception as err:
-        print("⚠️ Error writing to Google Docs: {}".format(err))
-    print("✅ Successfully updated Google Doc")
-    return
+        vertexai.init(project=project_id, location="us-central1")
+        model = GenerativeModel(model_name=model_name)
+
+        # TRANSCRIPTION
+        print("\n TRANSCRIPTION....")
+        prompt = """
+        Transcribe this video, word for word. Add punctuation to improve readability - avoid run on sentences. Return ONLY the exact transcript."""
+        video_file = Part.from_uri(c.video_gcs_path, mime_type="video/mp4")
+        print("video gcs path: {}, video file: {}".format(c.video_gcs_path, video_file))
+        contents = [video_file, prompt]
+        response = model.generate_content(contents)
+        transcript = response.text
+        transcript = transcript.strip()
+        logging.debug("🎤 Raw Transcript: " + transcript)
+
+        # SUMMARIZATION WITH SENTIMENT
+        print("\n SUMMARIZATION WITH SENTIMENT ANALYSIS....")
+        model = model = GenerativeModel(
+            model_name="gemini-1.5-flash-001",
+            system_instruction=[
+                "You are a friction log generator. A friction log is a written record of a developer's experience. You will be given a video, the video's transcript, and some screenshots. YOUR TASK: summarize the contents of the video, using the transcript and screenshots. Use collective first person, using we pronouns. Be as detailed as possible - up to 4-5 sentences per summary. If you see hyperlinks or code, include them in your summary - not as part of the 5 sentence count. IMPORTANT: Tag sentiment as follows: ✅ Positive (This went well). ⚠️ Some developer friction (This was challenging). ❌ Significant developer friction (This was a blocker). If the summary is neutral sentiment, do not use any emoji. Always put the emoji at the BEGINNING of the summary. It should be the first character.",
+                sys_inst,
+            ],
+        )
+        prompt_contents = [
+            "Transcript: " + transcript,
+            Part.from_uri(c.video_gcs_path, mime_type="video/mp4"),
+        ]
+        for sp in c.ss_gcs_paths:
+            prompt_contents.append(Part.from_uri(sp, mime_type="image/jpeg"))
+        response = model.generate_content(prompt_contents)
+        summ = response.text
+        summ = summ.strip()
+        print("Got summary: ", summ)
+        return transcript, summ
+    except Exception as e:
+        print(f"❌ Error processing with Gemini: {e}")
+        return ""
 
 
-def autologger(video_path):
-
-    print(
+def autologger():
+    logging.basicConfig(
+        level=logging.DEBUG, format="%(levelname)s:%(name)s:%(message)s"
+    )
+    logging.info(
         """
              _        _                             
             | |      | |                            
@@ -230,51 +223,79 @@ def autologger(video_path):
                               |___/ |___/           
     """
     )
-    print(
-        "\n📠 Hello. I am an AI-powered friction log generator. I will create a friction log draft from: {}\n".format(
-            video_path
+    config = configparser.ConfigParser()
+    configFilePath = "config.ini"
+    config.read(configFilePath)
+
+    video_path = config["autologger"]["video_path"]
+    video_path = video_path.strip()
+    topic = video_path.split("/")[-1].split(".")[0]
+    interval = config["autologger"]["summary_interval_secs"]
+    model = config["autologger"]["vertexai_model"]
+    sys_inst = config["autologger"]["system_instructions"]
+    project_id = config["autologger"]["gcp_project_id"]
+    bucket_name = config["autologger"]["gcs_bucket_name"]
+
+    logging.info(
+        "\n✅ Config loaded. \ntopic: {}\nvideo path: {}\ninterval: {}\nmodel: {}\nsystem instructions: {}\ngcp project id:{}\n gcs_bucket_name:{}".format(
+            topic,
+            video_path,
+            interval,
+            model,
+            sys_inst,
+            project_id,
+            bucket_name,
         )
     )
-    global bucket_name
-    global gcs_folder_prefix
-    global project_id
-    chunk_video_and_grab_screenshots(video_path)
+    fl = MdUtils(file_name="out/" + topic, title=topic)
+
+    # split_video_and_grab_screenshots(video_path, interval)
+
     clips = []
-
-    subdirs = os.listdir("./out")
-    # sort by chunk_number, so chunk_9, chunk_10, chunk_11 ...
+    subdirs = os.listdir("./clips")
     ordered_dirs = sorted(subdirs, key=lambda x: int(x.split("_")[1]))
-    print("Processing clips: {}".format(ordered_dirs))
-    for subdir in ordered_dirs:
-        print("\n 🎞️ Processing clip: {}".format(subdir))
-        c = Clip(None, None, None, None, None)
-        c.video_gcs_path, c.screenshots_paths = upload_to_gcs(
-            project_id, bucket_name, gcs_folder_prefix, subdir
+    print(
+        "🚧 Building your friction log, one video clip at a time: {}".format(
+            ordered_dirs
         )
-        c.transcript = get_transcript(c.video_gcs_path)
-        c.summary = get_summary(c.transcript, c.screenshots_paths)
-        c.sentiment = get_sentiment(c.transcript, c.screenshots_paths, c.summary)
+    )
+    subdirs = os.listdir("./clips")
+    ordered_dirs = sorted(subdirs, key=lambda x: int(x.split("_")[1]))
+    print("🚧 Building your friction log: {}".format(ordered_dirs))
+    for i, subdir in enumerate(ordered_dirs):
+        print("\n 🎞️ Processing clip: {}".format(subdir))
+        c = Clip(
+            topic=topic,
+            clip_number=i,
+            video_gcs_path=None,
+            ss_gcs_paths=None,
+            ss_drive_paths=None,
+            transcript=None,
+            summary=None,
+        )
+        logging.info("\nUploading video and screenshots to GCS and Google Drive...")
+        c.video_gcs_path, c.ss_gcs_paths, c.ss_drive_paths = upload_to_drive_gcs(
+            project_id, bucket_name, c, topic + str(int(time.time())), subdir
+        )
+
+        logging.info("\nGenerating transcript and summary/sentiment with Gemini...")
+        c.transcript, c.summary = gemini_process(c, project_id, model, sys_inst)
         clips.append(c)
-
-    # save intermediate state to JSON (for testing + debugging)
-    write_clips_to_json(clips)
-
-    print("🤖 Done Video and AI processing. Ready to write to Google Docs.")
-
-    with open("clips.json") as f:
-        clips = json.load(f)
-        clips = [
-            Clip(
-                c["video_gcs_path"],
-                c["screenshots_paths"],
-                c["transcript"],
-                c["summary"],
-                c["sentiment"],
+        write_clips_to_json(clips)
+        logging.info("📝 Writing summary and screenshots to Friction Log markdown...")
+        fl.new_paragraph(c.summary)
+        for drive_path in c.ss_drive_paths:
+            fl.new_paragraph(
+                Html.image(
+                    path=drive_path,
+                    size="600",
+                )
             )
-            for c in clips
-        ]
-    generate_friction_log(clips)
+    logging.info("Writing final friction log to local markdown...")
+    fl.create_md_file()
+
+    logging.info("🏁 Autologger complete. Output file at: {}".format("out/" + topic))
 
 
 if __name__ == "__main__":
-    autologger("../test_recordings/java_cloudrun.mp4")
+    autologger()

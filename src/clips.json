@@ -1,202 +1,182 @@
 [
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_0/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_0/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_0/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 0,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682438/clip_0/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682438/clip_0/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682438/clip_0/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "Uh so I'm going to start by opening up a Google Cloud console here using my Junix account. Um I'm also going to start by searching for what I need. So um deploy a Java Spring app to Google Cloud run. So let's see the first uh search result I see looks promising. It is a Cloud Run quickstart that takes me into the documentation. Deploy a Java Spring boot service into Cloud Run. So it looks like",
-        "summary": "We opened up Google Cloud console using our Junix account. We started by searching for \"deploy a Java Spring app to Google Cloud run\", then clicked on the first search result: \"Cloud Run quickstart.\" The search result took us to the documentation for deploying a Java Spring boot service to Cloud Run. \n",
-        "sentiment": "POSITIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1Npp4m-tWMbfARp0m8Bz_nUdtIqAryq3h",
+            "https://drive.google.com/uc?id=1iBFLbc5yAaqJWkddaz12mWPALfpYoKyU"
+        ],
+        "transcript": "Okay. Uh so this is a uh test friction log input uh for the Autologger bot. The use case that uh I'm going to run through here is deploy a Java Spring app to Cloud Run. Um This is hopefully a simple use case that won't take too long and can just provide a simple test case here. So I'm expecting to use Cloud Run Artifact Registry and Cloud Shell to get this done. Um and so let's uh let's get started. So I'm going to close out of this doc. 'Cause instead of friction logging, I'm just going to go through the CUJ and have the bot try to uh bootstrap the friction log for me. Uh so I'm going to start by opening up a Google Cloud Console here, using my unix account. Um I'm also going to start by searching for what I need. So um",
+        "summary": "\u2705 We started by opening up a Google Cloud Console and logging in with our Unix account. We planned to use Cloud Run, Artifact Registry and Cloud Shell. We were expecting this to be a simple task, and closed out a Friction Log document so we could use the Autologger bot to bootstrap the document for us. We searched for \"cloud run artifact registry\" on the Google Cloud Console."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_1/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_1/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_1/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 1,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682477/clip_1/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682477/clip_1/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682477/clip_1/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "There is a basic sample here. I'm grabbing the spring boot starter, there's some code. You call run deploy. So this looks actually to be kind of exactly what I want. So let's try to um let's try to run through this. Um I'm not going to use the Neo's guide. I'm going to use the static tutorial that's just a personal preference. I don't like how squished the Neo's tutorials are. So I don't usually use um So let's um let's head into our project. For simplicity sake, I'm just",
-        "summary": "We started by reviewing a sample application to deploy a simple web service. We chose to use the static tutorial, as it's more detailed than the Neo's guide. For simplicity's sake, we skipped a few steps, such as choosing a project selector, making sure that billing is enabled for the Google Cloud project, and installing the Google Cloud CLI. \n",
-        "sentiment": "POSITIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=11c6NAT-_Q2EB9CoKf2XzLYCIRMyzeBx8",
+            "https://drive.google.com/uc?id=1ynRgW8-9GSytNrrmW_GAEm-jg6gTiAyf"
+        ],
+        "transcript": "Deploy a Java Spring app to Google Cloud Run. So let's see, the first uh search result I see looks promising. It is a Cloud Run quick start that takes me into the documentation. Deploy a Java Spring Boot service into Cloud Run. So it looks like there is a basic sample here. I'm grabbing the Spring Boot starter. There's some code. G Cloud Run deploy. So this looks actually to be kind of exactly what I want. So let's try to um let's try to run through this. Um I'm not going to use the Neos guide. I'm going to use the static tutorial. That's just a personal preference. I don't like how squished the Neos tutorials are, so I don't usually use them. So let's um let's head into our project. For simplicity's sake, I'm just going to use an a uh existing project here, with billing enabled already. Uh and I'm going to use my local Mac shell, uh with G Cloud already installed here.",
+        "summary": "\u2705 We started by searching for documentation on deploying a Java Spring Boot service to Google Cloud Run. We found a quickstart guide that included a basic sample app. We decided to follow the static tutorial instead of the Neos guide, as we prefer the format. We then navigated to our existing project in the Google Cloud console, which had billing enabled. We used our local Mac shell to execute the gcloud commands, as it was already installed."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_2/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_2/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_2/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 2,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682500/clip_2/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682500/clip_2/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682500/clip_2/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "I'm going to use an a uh existing project here with billing enabled already uh and I'm going to use my local Mac shell uh with GCloud already installed here So way in It's thinking Okay Yeah GCloud install That's good Um I'm going to make sure my project is set here GCloud's",
-        "summary": "We started by opening Google Cloud Console and confirming that our project was set up. We then opened a local Mac shell and confirmed that we had Google Cloud installed. \n",
-        "sentiment": "NEUTRAL"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1kt6fRThU6yEpqP4bkCtQVNrPS3Y97MeI",
+            "https://drive.google.com/uc?id=1rp5eKrlGCKNq9e-S7uXlJzQf_AVnMrki"
+        ],
+        "transcript": "Zoom way in. Taking Okay. Yeah, G clouds install, that's good. Um, I'm going to make sure my project is set here. CPET sandbox. And I'm going to now follow these steps to write the sample application. So, this is interesting. So, um, rather than cloning a GCP sample, I'm going to grab the Spring Boot Starter. Pull that down into a directory called \"hello world\". I think I can skip the window step because I'm on MacOS. Thinking.",
+        "summary": "\u2705 We started by making sure our Google Cloud project was properly set. We ran the command `gcloud config set project cpet-sandbox` and it worked as expected. Next, we looked at the documentation for how to build a simple Java app. We wanted to use Spring Boot to write the app, and the instructions provided the following cURL command: `curl -d type=maven-project -d bootVersion=3.2.1 -d dependencies=web -d javaVersion=17 -d name=helloworld -d artifactId=helloworld -d baseDir=helloworld  https://start.spring.io/starter.zip`  We then unzipped the folder, and moved into the newly created directory."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_3/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_3/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_3/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 3,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682519/clip_3/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682519/clip_3/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682519/clip_3/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "sandbox. And I'm going to now follow these steps to write the sample application. So this is interesting. So um rather than cloning a GCP sample, I'm going to grab the Spring Boot starter, pull that down into a directory called hello world",
-        "summary": "We tried to start a new Spring Boot project by using the curl command to pull down the Spring Boot starter and encountered an error when we tried to run gcloud.  We found the documentation and copied the curl command into the terminal, but then we encountered a different error.  \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1e2NElCYEea9i4pRaTTcyPFGZcrnTa24F",
+            "https://drive.google.com/uc?id=1SgmdOos7SuXeTValY90C7U7F3_nPaMlh"
+        ],
+        "transcript": "This seems tricky because I'm not seeing any bytes received. So, I'm going to get out of this, actually. Uh, do do do. So, let's just run this one at a time, here. So, let's try to just curl. Let me just see if I can hit this. So, it seems like the server is not responding. So, start.spring.io. I'm wondering if they moved the moved the zip, maybe? Starter. Spelling. Yeah. So, the server is not responding. So, this might be a bug here in our tutorial. We might need to, uh, is it my internet? What's happening, here? Actually, it might be my internet. Uh, for some reason my internet is not",
+        "summary": "\u26a0\ufe0f We ran into an issue when downloading the Java project dependencies. We first tried to curl the dependency zip file, but saw no bytes received. We then tried to access the 'start.spring.io' website, but the server didn't respond.  We tested our internet connection, and it seemed to be working. At this point, we suspected that the URL to download the dependencies might be incorrect or broken, causing the problem.  We decided to investigate the tutorial for any potential errors."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_4/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_4/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_4/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 4,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682540/clip_4/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682540/clip_4/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682540/clip_4/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "I think I can skip the window step because I'm on Mac OS. Thinking. Thinking. It seems tricky because I'm not seeing any bytes received so I'm going to get out of this actually. Uh do do do so let's just run this one at a time here. So, let's try to just curl",
-        "summary": "We tried to skip the \"window step\" assuming it wasn't relevant for Mac OS, but then encountered issues with the bytes received not showing up. To troubleshoot, we tried running the commands one at a time,  which led us to run `curl` commands to download and unzip the necessary files. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1ujQRgy1vfLiZivbhDdUBsrCQO8X38413",
+            "https://drive.google.com/uc?id=1x5SzZkZqNyy_eNh1GBke29F6gdRHamfh"
+        ],
+        "transcript": "0:00 Happy so let's try to fix that uh Well Something something something is up Let's open my uh my network settings here Yeah so my internet seems to be like glitching out It says I have an IP It says I'm connected but I I'm clearly not Um so let's try to fix it",
+        "summary": "\u26a0\ufe0f We were trying to deploy a Spring Boot application to Google Cloud Run, but our internet connection was unstable. We attempted to run a speed test, but it resulted in a 0.00 Mbps download speed. We tried to reconnect to our Wi-Fi, but it showed as connected, although we were clearly not."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_5/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_5/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_5/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 5,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682558/clip_5/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682558/clip_5/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682558/clip_5/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "Let me just see if I can hit this. So it seems like the server is not responding. So start.spring.io I'm wondering if they've moved the zip maybe. Starter spelling. Yeah so this server is not responding so this might be a bug here in our tutorial. We might need to uh",
-        "summary": "We tried to download a starter project using a curl command and were unsuccessful. It seems like the server might not be responding, which could be a bug.  We may need to find an alternate way to download the project. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1N854S8jcTlGs_y1o_U55JNNfb54ZgHXq",
+            "https://drive.google.com/uc?id=1xRx2OmTm6505umTE5P1cVNZ74OzYdVYb"
+        ],
+        "transcript": "Maybe it'll just switch to Google guest. There we go. Okay, let's try to clone this once more. Something just clearly glitched out. We're fine now. Okay. Let's do this again. Yay! Okay. Uh, so we have our hello world directory here. I'm gonna open my IDE, and open up that hello world directory. So here's the Spring Boot starter. Maven wrapper, source main Java. Here's our little app. Let's go back to the tutorial. So it wants us to update the HelloWorldApplication to, I guess, the source code below. So I'm going to replace all the code that's here with this.",
+        "summary": "\u2705 We started this tutorial by trying to clone a repository. We had some network issues, but eventually got the clone to work. We then opened up the cloned directory in our IDE and made our first code update, replacing the starter code with the code from the tutorial. We\u2019re ready to start building the application."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_6/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_6/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_6/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 6,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682579/clip_6/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682579/clip_6/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682579/clip_6/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "uh is it my internet? What's happening here? Actually it might be my internet uh for some reason my internet is not happy So let's try to fix that Uh well something something is up",
-        "summary": "We started working on the tutorial, \"Getting Started: Building an Application with Spring Boot,\" but then our internet connection started acting up. We tried to diagnose the problem and ran a speed test to see if it was our internet that was causing the issue. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=18_qyNvdt9t45MyXv9Ug0R6XGGY0ZZBPH",
+            "https://drive.google.com/uc?id=1cDpKyeQqUr8aUxsjbcozrYAy2lSvbbeF"
+        ],
+        "transcript": "This and it looks like it when you hit the uh hit the index endpoint it will say \"Hello world\" I mean yeah Okay and then we're going to open application.properties and add the uh the port field here port 8080 Then it wants us to create a project.toml field Or sorry a project.toml file uh with a java version So I guess I should go back into my um friction log here and make and make sure I'm using the uh java version the tutorial's telling me to use which is java 17",
+        "summary": "\u2705 We are following a tutorial to deploy a Java Spring app to Google Cloud Run. We created a Hello World Spring app, but needed to add a \"port\" field to the application.properties file. Next, we needed to create a project.toml file, which specifies the Java version used in the project. This was a quick check to make sure our code matched the tutorial, which specifies Java 17.  We also made sure our friction log was up-to-date."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_7/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_7/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_7/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 7,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682625/clip_7/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682625/clip_7/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682625/clip_7/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "Let's open my uh my network settings here. Let's open my uh my network settings here. Yes, some my internet seems to be like glitching out.",
-        "summary": "We tried to open our network settings to check our internet connection because it seemed like it was glitching out.  \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1N5Zm96jO0jiKlEbqOI9l2gIz_8u6uNsB",
+            "https://drive.google.com/uc?id=1C88YH-Bbd6rwI7udMckBqxBotVnxGqW5"
+        ],
+        "transcript": "I guess one potential point of friction here or one tricky thing is that for customers that aren't on Java 17 so like 18 21 this might be tricky because they might want to bring their own Java runtime That's okay. Uh let's see. This quickstart assumes you have owner or editor roles. Yes, I do. Let's run \"gcloud\" \"cloud\" \"run\" \"deploy\" Deploy from source from \"helloworld\" service name \"helloworld\"  Let's do US Central 1. So it's 32. Okay. Uh it's going to create an Artifact Registry for us, that's good. Yes, allow unauthenticated invocations. That's deploying.",
+        "summary": "\u2705 We started the process of deploying a Java app to Google Cloud Run. We noticed a potential point of friction where users not using Java 17 may need to bring their own Java runtime. The quickstart requires owner or editor roles on the project. We ran the \"gcloud run deploy\" command to deploy from source using the \"helloworld\" service name, in US Central 1. This prompted Cloud Run to create an Artifact Registry for us and also asked if we want to allow unauthenticated invocations, which we agreed to. The deployment process is now underway."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_8/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_8/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_8/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 8,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682646/clip_8/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682646/clip_8/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682646/clip_8/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "It says I have an IP, says I'm connected but I am clearly not. Um, so let's try to fix it. Maybe I'll just switch to Google Guest. There we go. Okay, let's try to clone this once more. Something just queerly glitched out, we're fine now.",
-        "summary": "We tried to connect to the internet, but there was an issue. We switched to Google Guest network, and then were able to clone the repo.  There was a brief glitch, but we were able to overcome it. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1vLBMqTXaKoGrcEnh3bw0XRkmIN9_a0hS",
+            "https://drive.google.com/uc?id=1maAev4zjCdYDZnCCxKA-SXgMnVtuPdL9"
+        ],
+        "transcript": "I also want to go back into my friction log and remove Cloud Shell, cuz I was using my Mac shell. So, I think this, I can just get this done with only Cloud Run and only Artifact Registry. So, let's wait for the deployment to finish. Something else I can do is open up the, uh, Cloud Run console here. And hopefully eventually see a service show up here. This is some other project, but hopefully there will be a Hello World service that shows up. I can also open up my build box here, it looks like. So, this takes me into Cloud Build.",
+        "summary": "\u2705 We are checking our friction log, which is a record of our experience deploying a Java Spring backend service to Cloud Run.  We are removing Cloud Shell from our friction log, as we were actually using our Mac shell. We realized that we could get this done with just Cloud Run and Artifact Registry. We are now waiting for the deployment to finish, and we are checking the Cloud Run console to see if we can see our Hello World service. We can also check the Cloud Build log to see what's happening."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_9/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_9/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_9/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 9,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682681/clip_9/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682681/clip_9/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682681/clip_9/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "Okay let's do this again Yay Okay uh so we have our Hello World directory here I'm going to open my IDE and open up that Hello World directory So here's the Spring Boot starter Maven wrapper source main Java here's our little app Let's go back to the tutorial",
-        "summary": "We opened up our Hello World directory in our IDE and looked at the Spring Boot starter, Maven wrapper, source main Java, and app. Then we looked back at the tutorial for guidance. \n",
-        "sentiment": "NEUTRAL"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1Rr-5RK6dgdXTEqW6_7B5MXRogu7pOWtB",
+            "https://drive.google.com/uc?id=1OajrOlziYxHxAolsvD87QDayJNMywSwg"
+        ],
+        "transcript": "And I can see that my container image is still building. So It's using build packs to build this Java service and package up my code. Yeah. And while that's running, if I go back into this tutorial, One thing that might be difficult for a customer is that in the sample app section, it's not The language isn't super clear as to whether you should be adding or replacing code. So, intuitively, I understood that, \"Oh, in the case of the, uh, controller I should probably replace the entire file.\" So that's what I did. And I I hope that worked. But in the case of application.properties, I added a line. So I didn't remove line 1, I simply added line 2. So maybe the language could be clarified a little bit, um, in the tutorial itself. All right, looks like my container built successfully. That's great.",
+        "summary": "\u2705 We built a container image using Cloud Build and build packs for a simple Java web service. The tutorial we're following was a little unclear about whether we should add or replace code in certain files, which led to some confusion. We replaced the entire contents of the HelloWorldController.java file, but we only added a new line to application.properties. Ultimately, the container build completed successfully."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_10/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_10/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_10/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 10,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682734/clip_10/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682734/clip_10/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682734/clip_10/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "So it wants us to update the Hello World application to I guess the source code below. So I'm going to replace all the code that's here with this, and it looks like it when you hit the uh hit the index endpoint it will say Hello World. I mean yeah.",
-        "summary": "We replaced all the code in our Hello World application with the provided source code.  The code sets up a RestController and returns a greeting when the index endpoint is hit, and we\u2019re excited to see how this works. \n",
-        "sentiment": "POSITIVE"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1lPKoUhIU2hSzve4P2D67Q8hwm3wjBpMv",
+            "https://drive.google.com/uc?id=115jvA1kGsIue0cXHOOCOtRPDXEJDznvY"
+        ],
+        "transcript": "Um, so hopefully this got pushed to Artifact Registry and I will eventually see a service getting started up in Cloud Run. Yes, I do. Let's click on it. It's looking like it's still in pending. It's creating the revision. Great, it looks like the deployment was successful. Uh, so what does the tutorial want us to do? Visit your deployed service by opening the service URL in a web browser. So if I click on that URL I can see the \"Hello World!\" message. So, hooray! It looks like I successfully got through this tutorial and I have a Java 17, uh, Spring Boot app running in Cloud Run, which is the goal. So that's great. Um, let's see this, uh this command was successful. Let's head back here. So yeah, you'll be charged for storing the image in Artifact Registry. You can delete the",
+        "summary": "\u2705 We successfully deployed a Java Spring Boot application to Cloud Run. We used the `gcloud run deploy` command to build and deploy from source code, which created an Artifact Registry repository to store the container image. Once the deployment was successful, we clicked on the service URL and saw the \"Hello World\" message."
     },
     {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_11/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_11/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_11/screenshots/screenshot_1.jpg"
+        "topic": "java_cr",
+        "clip_number": 11,
+        "video_gcs_path": "gs://cpet-autologger-test/java_cr1724682757/clip_11/video.mp4",
+        "ss_gcs_paths": [
+            "gs://cpet-autologger-test/java_cr1724682757/clip_11/screenshots/screenshot_0.jpg",
+            "gs://cpet-autologger-test/java_cr1724682757/clip_11/screenshots/screenshot_1.jpg"
         ],
-        "transcript": "Okay, and then we're going to open application.properties and add the uh the port field here port 8080. Then it wants us to create a project.toml file with a java version so I guess I should go back and",
-        "summary": "We tried to follow the steps to create a Java Spring Boot application. We struggled to find the right project file to add the Java version to and got confused about the ordering of the steps. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_12/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_12/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_12/screenshots/screenshot_1.jpg"
+        "ss_drive_paths": [
+            "https://drive.google.com/uc?id=1G9ArbEa6baWUp-k6heEDiyDWAaQGQJX0",
+            "https://drive.google.com/uc?id=1sSZPJnAj6RxCnzSCrQbtk9pigpxgzkmj"
         ],
-        "transcript": "to my um 00:01 friction log here and make sure and see make sure I'm using the uh Java version that the tutorials telling me to use which is Java 17 I guess one potential point of friction here or one tricky thing is that for customers that aren't on Java 17 so like 18 21 this might be tricky because they might want to bring their own Java runtime That's okay uh",
-        "summary": "We started by checking our Java version to make sure it matched the one used in the tutorial. We found that the tutorial used Java 17, which is the recommended version, but we considered the potential friction for users who are not on Java 17. We realized that those users might want to bring their own Java runtime and we'll need to address that in our project. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_13/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_13/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_13/screenshots/screenshot_1.jpg"
-        ],
-        "transcript": "Well, let's see.  This quick start assumes you have owner or editor roles in the project you are using for the quick start.  Otherwise, refer to Cloud Run Source developer for the required permissions for deploying a Cloud Run resource from source.  To deploy from source Deploy from source automatically builds a container image from source code and deploys it.  1. In your source code directory, deploy using source from the following command. gcloud run deploy.  If you prompted for the ART location, enter either a path to the current folder, When you are prompted for the source code location, press enter to use the default. example, hello world, If you are prompted for the Artifact Registry API token to allow Artifact Registry repository, you will be prompted for your selected region of your choice, for example us-central1.  When you are prompted for authentication, respond. You are now allowing unauthorized invocations to hello world.  Then wait a few moments until the deployment is complete.  On success, the command line displays the service URL.",
-        "summary": "We tried to deploy a Cloud Run resource from source using the gcloud run deploy command.  It was a little confusing as we were prompted for an Artifact Registry API token, and then for authentication, but we finally got it working.  We had to wait a few moments for the deployment to complete, but it was successful!  The command line displayed the service URL. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_14/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_14/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_14/screenshots/screenshot_1.jpg"
-        ],
-        "transcript": "allow unauthenticated invocations to hello world Y/N? Y Building using Buildpacks and deploying container to Cloud Run service hello world in project [pcpt-sandbox] region [us-central1] Building and deploying new service... Uploading sources... Creating Container Repository... Uploading sources... Building Container... Logs are available at https://console.cloud.google.com/cloud-build/builds/1laa95965-feff-4ada-8850-c32373842586z/project=510756495987] Creating Revision... Routing traffic... Setting IAM Policy... And that's the deploying. I also want to go back into my friction log and remove cloud shell because I was using my Mac shell. So I think this I can just get this done with only Cloud Run and only Artifact Registry. So let's wait for the",
-        "summary": "We deployed a new Cloud Run service, \"helloworld\", using Buildpacks. We built a container and uploaded the source code to Artifact Registry.  We also set up an IAM policy and routed traffic to the new service, which was a fairly smooth process. \n",
-        "sentiment": "POSITIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_15/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_15/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_15/screenshots/screenshot_1.jpg"
-        ],
-        "transcript": "Deployment to finish Something else I can do is open up the uh cloud run console here and hopefully eventually see a service show up here This is some other project but hopefully there will be a Hello World service that shows up",
-        "summary": "We deployed our Hello World service to Cloud Run by building the container using Buildpacks and deploying to the `us-central1` region. The service was then made available at `https://console.cloud.google.com/cloud/build/builds/iaa99565-feff-4ada-8850-c32373042586/project=51075645987`. \n",
-        "sentiment": "POSITIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_16/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_16/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_16/screenshots/screenshot_1.jpg"
-        ],
-        "transcript": "00:00 I can also open up my build logs here. It looks like 00:09 So this takes me into Cloud Build, and I can see that my container image is still building, so 00:15 It's using buildpacks to build this Java service and package up my code. 00:21 Yeah, and while that's running. If I go back into this tutorial 00:26 Well,",
-        "summary": "We went into Cloud Build to check the progress of our container image.  We were happy to see that the build was in progress, using buildpacks to package up our Java code. We were then able to go back to the tutorial and continue working. \n",
-        "sentiment": "POSITIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_17/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_17/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_17/screenshots/screenshot_1.jpg"
-        ],
-        "transcript": "One thing that might be difficult for a customer is that in the sample app section it's not the language isn't super clear as to whether you should be adding or replacing code. So intuitively I understood that oh in the case of the application uh controller I should probably replace the entire file. So that's what I did and I I hope that worked. But in the case of application.properties I added a line. So I didn't remove line one I simply",
-        "summary": "We tried to deploy a Java web service to Google Cloud Run by following the instructions provided in the sample app documentation. We were unsure whether we should add or replace existing code in the sample app, so we replaced the entire `application.controller` file and added a line to the `application.properties` file. \n",
-        "sentiment": "SOMEWHAT_NEGATIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_18/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_18/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_18/screenshots/screenshot_1.jpg"
-        ],
-        "transcript": "added line to So maybe the language could be clarified a little bit um in the tutorial itself. All right looks like my container built successfully that's great Um so hopefully this got pushed to artifact registry and I will eventually see a service getting started up in Cloud Run Yes I do Let's click on it So looking like it's still pending It's creating the revision",
-        "summary": "We built the container successfully, which is great! We are hoping it was pushed to Artifact Registry and will eventually see a service starting up in Cloud Run. We see the service is still pending and creating a new revision. \n",
-        "sentiment": "POSITIVE"
-    },
-    {
-        "video_gcs_path": "gs://cpet-autologger/java-cloudrun-1720363658/chunk_19/video.mp4",
-        "screenshots_paths": [
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_19/screenshots/screenshot_0.jpg",
-            "gs://cpet-autologger/java-cloudrun-1720363658/chunk_19/screenshots/screenshot_1.jpg"
-        ],
-        "transcript": "Great, it looks like the deployment was successful. Uh, so what does the tutorial want us to do? Visit your deployed service by opening the service URL in a web browser. So if I click on that URL, I can see the Hello World message. So hooray, it looks like I successfully got through this tutorial, and I have a Java 17 uh, Spring Boot app running in p",
-        "summary": "We successfully deployed our Java 17 Spring Boot application to Google Cloud Run, following the tutorial steps. We confirmed the deployment by opening the service URL in our browser and verifying the \"Hello World!\" message was displayed. \n",
-        "sentiment": "POSITIVE"
+        "transcript": "Container image and or delete your project. I\u2019m not going to delete my project. But, what I probably will do is spin down the uh the service. \u2018Cause I do not need it anymore. Delete. Delete Hello World. Great. So yeah that concludes the basic use case of deploying a Java app to Cloud Run. All done.",
+        "summary": "\u2705 We finished the tutorial on deploying a Java app to Cloud Run. We decided to spin down our service instead of deleting our project, as we had already built and deployed our app successfully. We then navigated to the Cloud Run Services page and clicked the \"Delete\" button to get rid of our service.  After we confirmed the deletion, the notification \"Service Deleted\" appeared, concluding the tutorial."
     }
 ]

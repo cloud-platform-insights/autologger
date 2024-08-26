@@ -6,6 +6,8 @@ __pycache__/
 # Video and image files
 *test_recordings*
 *out*
+*input*
+*clips*
 *bin*
 *lib*
 *include*
