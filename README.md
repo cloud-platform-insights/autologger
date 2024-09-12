@@ -14,8 +14,8 @@ Autologger is a friction log generator tool.
 
 1. Clone repo. 
 2. `cd autologger/src/` 
-3. `python3 -m venv .` 
-4. `source bin/activate`
+3. `python3 -m venv venv` 
+4. `source venv/bin/activate`
 5. `pip install -r requirements.txt`
 6. Download Google Meet recording of a friction log session. 
 7. Get Google Drive/Docs OAuth `credentials.json` by following [these instructions](). Save to `src/`.
