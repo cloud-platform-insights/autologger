@@ -227,6 +227,12 @@ def autologger():
     configFilePath = "config.ini"
     config.read(configFilePath)
 
+
+    # create output directories if they don't exist
+    directories = ['./clips', './out']
+    for directory in directories:
+        os.makedirs(directory, exist_ok=True)
+
     video_path = config["autologger"]["video_path"]
     video_path = video_path.strip()
     topic = video_path.split("/")[-1].split(".")[0]
