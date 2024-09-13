@@ -212,7 +212,7 @@ def autologger():
         level=logging.DEBUG, format="%(levelname)s:%(name)s:%(message)s"
     )
     logging.info(
-        """
+        r"""
              _        _                             
             | |      | |                            
   __ _ _   _| |_ ___ | | ___   __ _  __ _  ___ _ __ 
