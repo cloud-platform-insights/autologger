@@ -255,7 +255,7 @@ def autologger():
     )
     fl = MdUtils(file_name="out/" + topic, title=topic)
 
-    # split_video_and_grab_screenshots(video_path, interval)
+    split_video_and_grab_screenshots(video_path, interval)
 
     clips = []
     subdirs = os.listdir("./clips")
