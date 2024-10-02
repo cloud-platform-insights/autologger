@@ -10,15 +10,12 @@ import textwrap
 
 from clip import Clip
 from utils import make_topic_folders
+from utils import build_google_drive_client
 
 from mdutils.mdutils import MdUtils
 from mdutils.tools.Html import Html
 from moviepy.editor import VideoFileClip
 
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 from google.cloud import storage
@@ -76,37 +73,11 @@ def split_video_and_grab_screenshots(video_path, clip_length, out_dir):
     )
 
 
-def build_google_drive_client():
-    creds = None
-    scopes = [
-        "https://www.googleapis.com/auth/drive.file",
-    ]
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", scopes)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "credentials.json", scopes
-            )
-            creds = flow.run_local_server(port=0)
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
-    try:
-        drive_client = build("drive", "v3", credentials=creds)
-    except Exception as e:
-        print("❌ Error initializing Google Drive API client: {}".format(e))
-        sys.exit(1)
-    return drive_client
-
-
 # upload both screenshots and video to Google Cloud Storage bucket (for Vertex AI Gemini inference)
 def upload_to_drive_gcs(
-    project_id, bucket_name, c: Clip, folder_prefix, subdir
-):
+    project_id: str, bucket_name: str, c: Clip, folder_prefix: str, source_dir: str, subdir: str
+) -> None:
     formatted_video_gcs_path = ""
-    local_directory = "./clips"
     storage_client = storage.Client(project=project_id)
     bucket = storage_client.bucket(bucket_name)
     target_directory = "{}/{}".format(folder_prefix, subdir)
@@ -117,13 +88,14 @@ def upload_to_drive_gcs(
     ss_drive_paths = []
 
     try:
-        for screenshot in os.listdir(f"./clips/{subdir}"):
+        for screenshot in os.listdir(f"{source_dir}/{subdir}"):
             # SCREENSHOTS --> GCS and DRIVE
             if screenshot.endswith(".jpg"):
                 sp = f"{target_directory}/screenshots/{screenshot}"
                 ss_gcs_paths.append("gs://{}/{}".format(bucket_name, sp))
                 blob = bucket.blob(sp)
-                local_path = f"{local_directory}/{subdir}/{screenshot}"
+                local_path = f"{source_dir}/{subdir}/{screenshot}"
+                print(local_path)
                 logging.debug("🖼️ Uploading screenshot to GCS: " + sp)
                 blob.upload_from_filename(local_path)
                 logging.debug(
@@ -172,7 +144,7 @@ def upload_to_drive_gcs(
             else:
                 video_gcs_path = f"{target_directory}/video.mp4"
                 blob = bucket.blob(video_gcs_path)
-                blob.upload_from_filename(f"./clips/{subdir}/video.mp4")
+                blob.upload_from_filename(f"{source_dir}/{subdir}/video.mp4")
                 video_gcs_path = "gs://{}/{}".format(
                     bucket_name, video_gcs_path
                 )
@@ -256,10 +228,10 @@ def autologger():
 
     topic_list = make_topic_folders(source_folder)
 
-    # TODO: loop and execute all processing steps for all video files (see GH issue #15)
-    # (for now; just do the first one)
-    video_path = os.path.join(source_folder, f"{topic_list[0]}.mp4").strip()
+    # TODO: loop across ALL video files and process each (see GH issue #15)
+    # (for now: just do the first one)
     topic = topic_list[0]
+    video_path = os.path.join(source_folder, f"{topic}.mp4").strip()
 
     interval = config["autologger"]["summary_interval_secs"]
     model = config["autologger"]["vertexai_model"]
@@ -322,11 +294,12 @@ def autologger():
         )
         c.video_gcs_path, c.ss_gcs_paths, c.ss_drive_paths = (
             upload_to_drive_gcs(
-                project_id,
-                bucket_name,
-                c,
-                topic + str(int(time.time())),
-                subdir,
+                project_id=project_id,
+                bucket_name=bucket_name,
+                c=c,
+                folder_prefix=topic + str(int(time.time())),
+                source_dir=clips_path,
+                subdir=subdir
             )
         )
 
@@ -353,7 +326,7 @@ def autologger():
     fl.create_md_file()
 
     logging.info(
-        "🏁 Autologger complete. Output file at: {}".format("out/" + topic)
+        "🏁 Autologger complete. Output file at: {}.md".format("out/" + topic)
     )
 
 
