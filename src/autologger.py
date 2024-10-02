@@ -290,7 +290,7 @@ def autologger():
     if os.listdir(os.path.join(clips_path)):
         logging.info(
             f"Already have clips in folder: {clips_path};"
-            + f" to re-generate clips, delete {clips_path}"
+            + f" to re-generate clips, delete {clips_path}/*"
             )
     else:
         split_video_and_grab_screenshots(video_path, interval, clips_path)
