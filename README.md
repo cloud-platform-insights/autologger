@@ -16,7 +16,7 @@ _Note: This is an early prototype. It was tested on local MacOS Sonoma, using an
 3. `python3 -m venv venv`
 4. `source venv/bin/activate`
 5. `pip install -r requirements.txt`
-6. Download Google Meet recording of a friction log session.
+6. Download Google Meet recording of a friction log session to `/input`
 7. Get Google Workspace OAuth client ID credentials by following [these instructions](https://developers.google.com/workspace/guides/create-credentials#oauth-client-id). Save to `src/credentials.json`.
 8. Edit `config.ini` with your info.
 9. Run `python autologger.py`.

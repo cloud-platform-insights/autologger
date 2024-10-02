@@ -1,0 +1,1 @@
+Place input video files (`*.mp4`) in this folder. As per `.gitignore`, they will not be committed to the repo.

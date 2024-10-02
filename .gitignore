@@ -6,12 +6,15 @@ __pycache__/
 # Video and image files
 *test_recordings*
 *out*
-*input*
 *clips*
 *bin*
 *lib*
 *include*
 *src/gcs_downloads/**
+
+# User-provided video files; keep the folder (and readme) but ignore its contents
+input/*
+!input/README.md
 
 # Google OAuth credentials
 *token.json

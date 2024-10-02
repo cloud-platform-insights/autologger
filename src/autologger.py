@@ -6,8 +6,11 @@ import os
 import os.path
 import sys
 import time
+import textwrap
 
 from clip import Clip
+from utils import make_topic_folders
+
 from mdutils.mdutils import MdUtils
 from mdutils.tools.Html import Html
 from moviepy.editor import VideoFileClip
@@ -31,10 +34,11 @@ def write_clips_to_json(clips, filename="clips.json"):
 
 
 # splits the input video into [interval]-second clips. grabs 2 screenshots per clip.
-def split_video_and_grab_screenshots(video_path, clip_length):
-    logging.info("🎥 Breaking your video into {}-second clips.".format(clip_length))
+def split_video_and_grab_screenshots(video_path, clip_length, out_dir):
+    logging.info(
+        "🎥 Breaking your video into {}-second clips.".format(clip_length)
+    )
     clip_length = int(clip_length)
-    out_dir = "./clips"  # Base output directory
 
     try:
         video = VideoFileClip(video_path)
@@ -49,7 +53,9 @@ def split_video_and_grab_screenshots(video_path, clip_length):
             if not os.path.exists(clip_dir):
                 os.makedirs(clip_dir)
             clip_file_name = f"{clip_dir}/video.mp4"
-            clip.write_videofile(clip_file_name, codec="libx264", audio_codec="aac")
+            clip.write_videofile(
+                clip_file_name, codec="libx264", audio_codec="aac"
+            )
 
             # Capture and save screenshots every 30 seconds within the clip
             for screenshot_time in range(
@@ -81,7 +87,9 @@ def build_google_drive_client():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", scopes)
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "credentials.json", scopes
+            )
             creds = flow.run_local_server(port=0)
         with open("token.json", "w") as token:
             token.write(creds.to_json())
@@ -94,7 +102,9 @@ def build_google_drive_client():
 
 
 # upload both screenshots and video to Google Cloud Storage bucket (for Vertex AI Gemini inference)
-def upload_to_drive_gcs(project_id, bucket_name, c: Clip, folder_prefix, subdir):
+def upload_to_drive_gcs(
+    project_id, bucket_name, c: Clip, folder_prefix, subdir
+):
     formatted_video_gcs_path = ""
     local_directory = "./clips"
     storage_client = storage.Client(project=project_id)
@@ -127,7 +137,9 @@ def upload_to_drive_gcs(project_id, bucket_name, c: Clip, folder_prefix, subdir)
                     + os.path.basename(local_path)
                 }
                 logging.debug(
-                    "💿 Uploading screenshot to Google Drive: {}".format(file_metadata)
+                    "💿 Uploading screenshot to Google Drive: {}".format(
+                        file_metadata
+                    )
                 )
 
                 media = MediaFileUpload(local_path, mimetype="image/jpg")
@@ -137,8 +149,14 @@ def upload_to_drive_gcs(project_id, bucket_name, c: Clip, folder_prefix, subdir)
                     .execute()
                 )
                 image_id = file.get("id")
-                print("✅ Uploaded screenshot to Google Drive: {}".format(image_id))
-                ss_drive_paths.append("https://drive.google.com/uc?id=" + image_id)
+                print(
+                    "✅ Uploaded screenshot to Google Drive: {}".format(
+                        image_id
+                    )
+                )
+                ss_drive_paths.append(
+                    "https://drive.google.com/uc?id=" + image_id
+                )
 
                 # Make the screenshot public (⚠️) - note, Google docs needs a public link
                 # https://developers.google.com/docs/api/how-tos/images#python <-- see disclaimer
@@ -155,7 +173,9 @@ def upload_to_drive_gcs(project_id, bucket_name, c: Clip, folder_prefix, subdir)
                 video_gcs_path = f"{target_directory}/video.mp4"
                 blob = bucket.blob(video_gcs_path)
                 blob.upload_from_filename(f"./clips/{subdir}/video.mp4")
-                video_gcs_path = "gs://{}/{}".format(bucket_name, video_gcs_path)
+                video_gcs_path = "gs://{}/{}".format(
+                    bucket_name, video_gcs_path
+                )
                 logging.debug("🎥 Uploaded video to GCS: " + video_gcs_path)
 
     except Exception as e:
@@ -175,7 +195,11 @@ def gemini_process(c: Clip, project_id, model_name, sys_inst):
         prompt = """
         Transcribe this video, word for word. Add punctuation to improve readability - avoid run on sentences. Return ONLY the exact transcript."""
         video_file = Part.from_uri(c.video_gcs_path, mime_type="video/mp4")
-        print("video gcs path: {}, video file: {}".format(c.video_gcs_path, video_file))
+        print(
+            "video gcs path: {}, video file: {}".format(
+                c.video_gcs_path, video_file
+            )
+        )
         contents = [video_file, prompt]
         response = model.generate_content(contents)
         transcript = response.text
@@ -227,45 +251,59 @@ def autologger():
     configFilePath = "config.ini"
     config.read(configFilePath)
 
+    # base path for videos (defaults to ../input)
+    source_folder = config["autologger"]["video_path"]
 
-    # create output directories if they don't exist
-    directories = ['./clips', './out']
-    for directory in directories:
-        os.makedirs(directory, exist_ok=True)
+    topic_list = make_topic_folders(source_folder)
 
-    video_path = config["autologger"]["video_path"]
-    video_path = video_path.strip()
-    topic = video_path.split("/")[-1].split(".")[0]
+    # TODO: loop and execute all processing steps for all video files (see GH issue #15)
+    # (for now; just do the first one)
+    video_path = os.path.join(source_folder, f"{topic_list[0]}.mp4").strip()
+    topic = topic_list[0]
+
     interval = config["autologger"]["summary_interval_secs"]
     model = config["autologger"]["vertexai_model"]
     sys_inst = config["autologger"]["system_instructions"]
     project_id = config["autologger"]["gcp_project_id"]
     bucket_name = config["autologger"]["gcs_bucket_name"]
 
+    clips_path = os.path.join("./clips", topic)  # local storage for clips split from source video
+
     logging.info(
-        "\n✅ Config loaded. \ntopic: {}\nvideo path: {}\ninterval: {}\nmodel: {}\nsystem instructions: {}\ngcp project id:{}\n gcs_bucket_name:{}".format(
-            topic,
-            video_path,
-            interval,
-            model,
-            sys_inst,
-            project_id,
-            bucket_name,
+        textwrap.dedent(
+            f"""\n
+            ✅ Config loaded. \n
+            topic: {topic}\n
+            video path: {video_path}\n
+            interval: {interval}\n
+            model: {model}\n
+            system instructions: {sys_inst}\n
+            gcp project id:{project_id}\n
+            gcs_bucket_name:{bucket_name}
+            """
         )
     )
     fl = MdUtils(file_name="out/" + topic, title=topic)
 
-    split_video_and_grab_screenshots(video_path, interval)
+    # break the input file into clips
+    # (if there are already clips in the clips dir, skip this step)
+    if os.listdir(os.path.join(clips_path)):
+        logging.info(
+            f"Already have clips in folder: {clips_path};"
+            + f" to re-generate clips, delete {clips_path}"
+            )
+    else:
+        split_video_and_grab_screenshots(video_path, interval, clips_path)
 
     clips = []
-    subdirs = os.listdir("./clips")
+    subdirs = os.listdir(clips_path)
     ordered_dirs = sorted(subdirs, key=lambda x: int(x.split("_")[1]))
     print(
         "🚧 Building your friction log, one video clip at a time: {}".format(
             ordered_dirs
         )
     )
-    subdirs = os.listdir("./clips")
+    subdirs = os.listdir(clips_path)
     ordered_dirs = sorted(subdirs, key=lambda x: int(x.split("_")[1]))
     print("🚧 Building your friction log: {}".format(ordered_dirs))
     for i, subdir in enumerate(ordered_dirs):
@@ -279,16 +317,30 @@ def autologger():
             transcript=None,
             summary=None,
         )
-        logging.info("\nUploading video and screenshots to GCS and Google Drive...")
-        c.video_gcs_path, c.ss_gcs_paths, c.ss_drive_paths = upload_to_drive_gcs(
-            project_id, bucket_name, c, topic + str(int(time.time())), subdir
+        logging.info(
+            "\nUploading video and screenshots to GCS and Google Drive..."
+        )
+        c.video_gcs_path, c.ss_gcs_paths, c.ss_drive_paths = (
+            upload_to_drive_gcs(
+                project_id,
+                bucket_name,
+                c,
+                topic + str(int(time.time())),
+                subdir,
+            )
         )
 
-        logging.info("\nGenerating transcript and summary/sentiment with Gemini...")
-        c.transcript, c.summary = gemini_process(c, project_id, model, sys_inst)
+        logging.info(
+            "\nGenerating transcript and summary/sentiment with Gemini..."
+        )
+        c.transcript, c.summary = gemini_process(
+            c, project_id, model, sys_inst
+        )
         clips.append(c)
         write_clips_to_json(clips)
-        logging.info("📝 Writing summary and screenshots to Friction Log markdown...")
+        logging.info(
+            "📝 Writing summary and screenshots to Friction Log markdown..."
+        )
         fl.new_paragraph(c.summary)
         for drive_path in c.ss_drive_paths:
             fl.new_paragraph(
@@ -300,7 +352,9 @@ def autologger():
     logging.info("Writing final friction log to local markdown...")
     fl.create_md_file()
 
-    logging.info("🏁 Autologger complete. Output file at: {}".format("out/" + topic))
+    logging.info(
+        "🏁 Autologger complete. Output file at: {}".format("out/" + topic)
+    )
 
 
 if __name__ == "__main__":
