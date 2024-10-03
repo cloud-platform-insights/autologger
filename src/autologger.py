@@ -77,7 +77,6 @@ def split_video_and_grab_screenshots(video_path, clip_length, out_dir):
 def upload_to_drive_gcs(
     project_id: str, bucket_name: str, c: Clip, folder_prefix: str, source_dir: str, subdir: str
 ) -> None:
-    formatted_video_gcs_path = ""
     storage_client = storage.Client(project=project_id)
     bucket = storage_client.bucket(bucket_name)
     target_directory = "{}/{}".format(folder_prefix, subdir)
