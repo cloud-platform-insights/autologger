@@ -17,6 +17,7 @@ _Note: This is an early prototype. It was tested on local MacOS Sonoma, using an
 * A Google Cloud Storage bucket to which you have write access
 * A Google Cloud project with the following APIs enabled:
   * [Google Drive](https://console.developers.google.com/apis/api/drive.googleapis.com/)
+  * [Vertex AI](https://console.cloud.google.com/apis/library/aiplatform.googleapis.com/)
 
 ### Steps
 
