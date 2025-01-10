@@ -3,5 +3,5 @@ google-auth-httplib2
 google-auth-oauthlib
 google-cloud-aiplatform>=1.38
 google-cloud-storage
-moviepy
+moviepy==1.0.*
 mdutils

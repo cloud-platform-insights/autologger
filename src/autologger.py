@@ -24,7 +24,7 @@ from vertexai.generative_models import GenerativeModel, Part
 
 
 #  🎞️ VIDEO / SCREENSHOT HELPERS  🎞️
-def write_clips_to_json(clips, filename="clips.json"):
+def write_clips_to_json(clips, filename="out/clips.json"):
     clips_dict = [clip.to_dict() for clip in clips]
     with open(filename, "w") as f:
         json.dump(clips_dict, f, indent=4)
