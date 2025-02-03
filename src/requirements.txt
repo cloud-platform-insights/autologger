@@ -5,3 +5,5 @@ google-cloud-aiplatform>=1.38
 google-cloud-storage
 moviepy==1.0.*
 mdutils
+Flask
+werkzeug
