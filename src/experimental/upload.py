@@ -39,9 +39,6 @@ def process_upload_form(request):
             temp_dir = tempfile.gettempdir()
             file_destination = os.path.join(temp_dir, filename)
             file.save(file_destination)
-            file_size_in_bytes = os.stat(file_destination).st_size
-            print(f"Uploaded file: {file_destination}")
-            print(f"Uploaded file size: {file_size_in_bytes} bytes")
             return file_destination
 
     else:

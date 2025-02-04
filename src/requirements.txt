@@ -3,7 +3,7 @@ google-auth-httplib2
 google-auth-oauthlib
 google-cloud-aiplatform>=1.38
 google-cloud-storage
-moviepy==1.0.*
+moviepy>=2
 mdutils
-Flask
+flask
 werkzeug

@@ -37,7 +37,14 @@
 <main>
   Processing file...
   <div>
-    <pre>{{file_path}}</pre>
+    Uploaded file: <pre>{{file_path}}</pre>
   </div>
-  TODO!
+  <div>
+    Subclips:
+    <ul>
+      {% for clip in subclips %}
+        <li><pre>{{clip}}</pre></li>
+      {% endfor %}
+    </ul>
+  </div>
 </main>
