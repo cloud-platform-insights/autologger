@@ -1,6 +1,7 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
-import os, tempfile
+import os
+import tempfile
 
 ALLOWED_EXTENSIONS = {"mp4"}
 
