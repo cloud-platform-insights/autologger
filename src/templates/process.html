@@ -35,11 +35,9 @@
   {% endwith %}
 </nav>
 <main>
-  <div>⚠️ EXPERIMENTAL -- @davidstanke is experimenting with turning autologger into a web service; this web page will be the UI</div>
-  <hr>
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    Choose a video file (*.mp4): <input type="file" name="input_file">
-    <br>
-    <input type="submit">
-  </form>
+  Processing file...
+  <div>
+    <pre>{{file_path}}</pre>
+  </div>
+  TODO!
 </main>
