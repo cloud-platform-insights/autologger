@@ -3,15 +3,20 @@
 <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 <style>
   /* style overrides */
-  body, main {
+  body,
+  main {
     max-width: 800px;
     margin: 0 auto;
     padding: 1em;
   }
-  
-  h1, h2, h3, h4, h5 {
-    margin-top: 2em ;
-    margin-bottom: 0em ;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    margin-top: 2em;
+    margin-bottom: 0em;
   }
 
   h1 {
@@ -22,23 +27,30 @@
     font-size: 1.25em;
   }
 </style>
+<header>
+  <img src="{{ url_for('static', filename='header.png') }}">
+  <div>
+    ⚠️ EXPERIMENTAL -- @davidstanke is experimenting with turning autologger into a web service; this web page will be
+    the UI
+  </div>
+</header>
 <nav>
-  <h1>Autologger</h1>
   {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes>
+  <ul class=flashes>
     {% for message in messages %}
-      <li>{{ message }}</li>
+    <li>{{ message }}</li>
     {% endfor %}
-    </ul>
+  </ul>
   {% endif %}
   {% endwith %}
 </nav>
 <main>
-  <div>⚠️ EXPERIMENTAL -- @davidstanke is experimenting with turning autologger into a web service; this web page will be the UI</div>
-  <hr>
+  <b>Let's go!</b><br>
   <form action="/upload" method="post" enctype="multipart/form-data">
     Choose a video file (*.mp4): <input type="file" name="input_file">
+    <br>
+    GCS storage bucket for intermediate artifacts: <input type="text" name="gcs_bucket" required>
     <br>
     <input type="submit">
   </form>

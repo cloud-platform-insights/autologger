@@ -37,14 +37,14 @@
 <main>
   Processing file...
   <div>
-    Uploaded file: <pre>{{file_path}}</pre>
+    Source file: <pre>{{source_video_file}}</pre>
   </div>
   <div>
-    Subclips:
+    Media in Google Drive:
     <ul>
-      {% for clip in subclips %}
-        <li><pre>{{clip}}</pre></li>
-      {% endfor %}
+      <pre>
+        {{uploaded_media|tojson|safe}}
+      </pre>
     </ul>
   </div>
 </main>
