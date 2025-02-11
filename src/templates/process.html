@@ -21,6 +21,16 @@
   h2 {
     font-size: 1.25em;
   }
+
+  .raw_markdown {
+    font-family:'Courier New', Courier, monospace;
+    overflow-y: scroll;
+    max-height: 40em;
+    background-color:lightgreen;
+    padding:1rem;
+    border:1px solid green;
+    white-space: pre;
+  }
 </style>
 <nav>
   <h1>Autologger</h1>
@@ -43,8 +53,12 @@
     Media in Google Drive:
     <ul>
       <pre>
-        {{uploaded_media|tojson|safe}}
+        {{uploaded_media}}
       </pre>
     </ul>
+  </div>
+  <h2>Friction log (markdown)</h2>
+  <div class="raw_markdown">
+    {{friction_markdown}}
   </div>
 </main>

@@ -46,12 +46,18 @@
   {% endwith %}
 </nav>
 <main>
-  <b>Let's go!</b><br>
   <form action="/upload" method="post" enctype="multipart/form-data">
     Choose a video file (*.mp4): <input type="file" name="input_file">
     <br>
-    GCS storage bucket for intermediate artifacts: <input type="text" name="gcs_bucket" required>
+    GCP project with VertexAI enabled: <input type="text" name="gcp_project" required value="cpet-stanke-sandbox">
     <br>
-    <input type="submit">
+    GCS storage bucket for intermediate artifacts: <input type="text" name="gcs_bucket" required value="autologger">
+    <br>
+    Generative Model to use: <select name="model_name">
+      <option selected>gemini-1.5-pro-preview-0514</option>
+      <option>gemini-2.0-flash-001</option>
+    </select>
+    <br>
+    <input type="submit"> <em>(it may take a while!)</em>
   </form>
 </main>

@@ -11,22 +11,44 @@ def upload_dir(source_dir, destination_bucket):
 
     Return a list of all object URIs
     """
-    
-    print(destination_bucket)
-    
+
     rel_paths = glob.glob(source_dir + "/**", recursive=True)
     bucket = client.get_bucket(destination_bucket)
 
-    uploaded_objects = []
-    
+    # the name of the source_dir is a hash of the contents of the original
+    # file; if it has already been uploaded, skip.
+    video_id = source_dir.split(os.sep)[-1]
 
-    for local_file in rel_paths:
-        remote_path = (
-            f'autologger_media/{"/".join(local_file.split(os.sep)[1:])}'
+    blobs_in_storage = [
+        blob.name
+        for blob in client.list_blobs(
+            destination_bucket, match_glob=f"**/{video_id}**"
         )
-        if os.path.isfile(local_file):
-            blob = bucket.blob(remote_path)
-            blob.upload_from_filename(local_file)
-            uploaded_objects.append(remote_path)
+    ]
 
-    return uploaded_objects
+    if len(blobs_in_storage) > 0:
+        print("Video has already been uploaded to storage; skipping upload.")
+    else:
+        print("Uploading...")
+        for local_file in rel_paths:
+            # for destination, remove the full (local filesystem) path; use
+            # only folder specific to ths input file
+            stripped_path = local_file.replace(
+                os.sep.join(source_dir.split(os.sep)[:-1]), ""
+            )
+            # strip leading slash
+            if stripped_path[0] == "/":
+                stripped_path = stripped_path[1:]
+            if os.path.isfile(local_file):
+                blob = bucket.blob(stripped_path)
+                print(f"Uploading: {local_file}")
+                blob.upload_from_filename(local_file)
+
+        blobs_in_storage = [
+            blob.name
+            for blob in client.list_blobs(
+                destination_bucket, match_glob=f"**/{video_id}**"
+            )
+        ]
+
+    return sorted(blobs_in_storage)

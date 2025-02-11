@@ -1,5 +1,6 @@
 import logging
 import os
+import tempfile
 
 from moviepy import VideoFileClip
 import imageio
@@ -8,13 +9,27 @@ log = logging.getLogger("autologger.video_utils")
 
 
 def split_video_and_grab_screenshots(
-    source_video_file, out_dir, clip_length=60
+    source_video_file, source_video_hash, clip_length=60
 ):
-    """ Take the source file and split into N subclips of length `clip_length`.
-      Return a list of the paths of the output folders
+    """Take the source file and split into N subclips of length `clip_length`.
+    Also capture screenshots at regular intervals.
+    Return the path to the parent folder containing all clips and screenshots.
     """
+
+    out_dir_root = tempfile.gettempdir()
+
+    out_dir = os.path.join(out_dir_root, str(source_video_hash))
+
+    if os.path.exists(out_dir):
+        log.info(
+            f"skipping video split step because it has "
+            f"already been done and results saved to {out_dir}"
+        )
+        return out_dir
+    else:
+        os.makedirs(out_dir)
+
     log.info(f"🎥 Breaking your video into {clip_length}-second clips.")
-    clip_length = int(clip_length)
 
     video = VideoFileClip(source_video_file)
     duration = video.duration
@@ -42,3 +57,5 @@ def split_video_and_grab_screenshots(
             imageio.imwrite(screenshot_file_name, screenshot)
         start_time += clip_length
         clip_index += 1
+
+    return out_dir
