@@ -2,22 +2,20 @@
 
 from flask import Flask, request, redirect, render_template, url_for
 from mdutils.mdutils import MdUtils
-from mdutils.tools.Html import Html
 
 # from flask import flash, redirect
 
 import experimental.upload as upload
 import experimental.video_utils as video_utils
 import experimental.storage_utils as storage_utils
+import experimental.misc_utils as misc_utils
 import experimental.genai as genai
-from clip import Clip
 
 import logging
 import sys
 import json
 import os
-import hashlib
-import base64  # TODO: extract the base64 conversion to a helper
+import glob
 
 # config vars
 # TODO: extract these to a config
@@ -67,9 +65,7 @@ def process_video():
     model_name = request.args.get("model_name")
 
     # use hash of file as a unique identifier
-    with open(source_video_file, "rb") as video_file:
-        source_video_hash = hashlib.md5(video_file.read()).hexdigest()
-        video_file.close()
+    source_video_hash = misc_utils.file_hash(source_video_file)
 
     fl = MdUtils(file_name="out/" + source_video_hash, title=topic)
 
@@ -103,19 +99,17 @@ def process_video():
         fl.new_paragraph(summary)
 
         # Add images to markdown
-        # TODO: make this dynamic, not hardcoded to 2 (duh)
-        for idx in ["0", "1"]:
-            try:
-                with open(
-                    f"{media_dir}/{folder}/screenshot_{idx}.jpg", "rb"
-                ) as img:
-                    s = base64.b64encode(img.read())
 
-                    fl.new_paragraph(
-                        text=f"![{folder}/screenshot_{idx}](data:image/png;base64,{s.decode("utf-8")})"
-                    )
-            except Exception as e:
-                logging.error(f"Error processing screenshot {idx}: {e}")
+        for screenshot in glob.glob(
+            f"{media_dir}/{folder}/screenshot_[0-9].jpg"
+        ):
+
+            image_as_base64 = misc_utils.image_to_base64(screenshot)
+            print(image_as_base64)
+
+            fl.new_paragraph(
+                text=f"![screenshot](data:image/png;base64,{image_as_base64})"
+            )
 
             logging.info("Writing final friction log to local markdown...")
             fl.create_md_file()
