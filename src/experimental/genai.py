@@ -6,13 +6,13 @@ from vertexai.generative_models import GenerativeModel, Part
 log = logging.getLogger("autologger.genai")
 
 
-def gemini_process(gcs_clip_path, project_id, model_name, sys_inst):
+def gemini_process(gcs_clip_path, gcp_project, model_name, sys_inst):
 
     transcript = "TRANSCRIPT_PENDING"
     summ = "TRANSCRIPT_PENDING"
     video_file = Part.from_uri(gcs_clip_path, mime_type="video/mp4")
 
-    vertexai.init(project=project_id, location="us-central1")
+    vertexai.init(project=gcp_project, location="us-central1")
     model = GenerativeModel(model_name=model_name)
 
     # TRANSCRIPTION

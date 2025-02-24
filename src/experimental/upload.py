@@ -1,8 +1,9 @@
 from flask import flash, redirect
 from werkzeug.utils import secure_filename
+from flask import current_app as app
+import experimental.misc_utils as misc_utils
 
 import os
-import tempfile
 
 ALLOWED_EXTENSIONS = {"mp4"}
 
@@ -16,6 +17,10 @@ def allowed_file(filename):
 
 
 def process_upload_form(request):
+    """
+    Processes the file upload form, saving the file to the upload folder
+    (as configured in config.py). Return the hash of the uploaded file.
+    """
     if "input_file" not in request.files:
         flash("No file part")
         return redirect("/")
@@ -36,10 +41,21 @@ def process_upload_form(request):
         else:
             filename = secure_filename(file.filename)
 
-            temp_dir = tempfile.gettempdir()
-            file_destination = os.path.join(temp_dir, filename)
+            file_destination = os.path.join(
+                app.config["UPLOAD_FOLDER"], filename
+            )
             file.save(file_destination)
-            return file_destination
+            source_video_hash = misc_utils.file_hash(file_destination)
+
+            # rename the file to the hash
+            os.rename(
+                file_destination,
+                os.path.join(
+                    app.config["UPLOAD_FOLDER"], f"{source_video_hash}.mp4"
+                ),
+            )
+
+            return source_video_hash
 
     else:
         raise Exception(

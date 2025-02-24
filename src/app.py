@@ -1,6 +1,6 @@
 # EXPERIMENTAL Web application based on autologger
 
-from flask import Flask, request, redirect, render_template, url_for
+from flask import Flask, request, redirect, render_template, session, url_for
 from mdutils.mdutils import MdUtils
 
 # from flask import flash, redirect
@@ -11,19 +11,18 @@ import experimental.storage_utils as storage_utils
 import experimental.misc_utils as misc_utils
 import experimental.genai as genai
 
+from config import Config
+
 import logging
 import sys
 import json
 import os
 import glob
 
-# config vars
-# TODO: extract these to a config
-system_instructions = """You are an automated Friction Log generator. Your job is to take a recording or transcript, and summarize the developer's journey on a specific task: each step, with the highs and lows (sentiment) of their experience."""
-
 
 app = Flask("autologger")
-app.secret_key = "KbbMp_HrXRRC6se.Je-y"
+app.secret_key = "KbbMp_HrXRRC6se.Je-y"  # TODO: move this into config
+app.config.from_object(Config)
 
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(
@@ -41,38 +40,31 @@ def index():
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    uploaded_file_path = upload.process_upload_form(request)
-    app.logger.info(f"uploaded file: {uploaded_file_path}")
-    return redirect(
-        url_for(
-            ".process_video",
-            file_path=uploaded_file_path,
-            gcs_bucket=request.form.get("gcs_bucket"),
-            gcp_project=request.form.get("gcp_project"),
-            model_name=request.form.get("model_name"),
-        )
-    )
+    source_video_hash = upload.process_upload_form(request)
+
+    # set user's config choices to session
+    session["gcs_bucket"] = request.form.get("gcs_bucket")
+    session["gcp_project"] = request.form.get("gcp_project")
+    session["model_name"] = request.form.get("model_name")
+
+    return redirect(url_for(".process_video", v=source_video_hash))
 
 
 @app.route("/process", methods=["GET"])
 def process_video():
+    source_video_hash = request.args.get("v")
 
-    source_video_file = request.args.get("file_path")
-    topic = os.path.basename(source_video_file)
+    # TODO: figure out a better title (can it be extracted from content?)
+    topic = source_video_hash
 
-    gcs_bucket = request.args.get("gcs_bucket")
-    project_id = request.args.get("gcp_project")
-    model_name = request.args.get("model_name")
-
-    # use hash of file as a unique identifier
-    source_video_hash = misc_utils.file_hash(source_video_file)
+    gcs_bucket = session["gcs_bucket"]
+    gcp_project = session["gcp_project"]
+    model_name = session["model_name"]
 
     fl = MdUtils(file_name="out/" + source_video_hash, title=topic)
 
     # split into a series of small clips
-    media_dir = video_utils.split_video_and_grab_screenshots(
-        source_video_file, source_video_hash
-    )
+    media_dir = video_utils.split_video_and_grab_screenshots(source_video_hash)
 
     # upload all media to GCS
     uploaded_media = storage_utils.upload_dir(media_dir, gcs_bucket)
@@ -91,7 +83,10 @@ def process_video():
         )
 
         transcript, summary = genai.gemini_process(
-            gcs_clip_path, project_id, model_name, system_instructions
+            gcs_clip_path,
+            gcp_project,
+            model_name,
+            app.config["SYSTEM_INSTRUCTIONS"],
         )
         logging.info(
             "📝 Writing summary and screenshots to Friction Log markdown..."
@@ -105,7 +100,7 @@ def process_video():
         ):
 
             image_as_base64 = misc_utils.image_to_base64(screenshot)
-            print(image_as_base64)
+            # print(image_as_base64)
 
             fl.new_paragraph(
                 text=f"![screenshot](data:image/png;base64,{image_as_base64})"
@@ -122,7 +117,7 @@ def process_video():
 
     return render_template(
         "process.html",
-        source_video_file=source_video_file,
+        source_video_file=f"{source_video_hash}.mp4",
         media_dir=media_dir,
         uploaded_media=json.dumps(uploaded_media, indent=6),
         friction_markdown=fl.get_md_text(),

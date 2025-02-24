@@ -1,6 +1,7 @@
 import logging
 import os
 import tempfile
+from flask import current_app as app
 
 from moviepy import VideoFileClip
 import imageio
@@ -8,17 +9,17 @@ import imageio
 log = logging.getLogger("autologger.video_utils")
 
 
-def split_video_and_grab_screenshots(
-    source_video_file, source_video_hash, clip_length=60
-):
+def split_video_and_grab_screenshots(source_video_hash, clip_length=120):
     """Take the source file and split into N subclips of length `clip_length`.
     Also capture screenshots at regular intervals.
     Return the path to the parent folder containing all clips and screenshots.
     """
 
-    out_dir_root = tempfile.gettempdir()
+    source_video_file = os.path.join(
+        app.config["UPLOAD_FOLDER"], f"{source_video_hash}.mp4"
+    )
 
-    out_dir = os.path.join(out_dir_root, str(source_video_hash))
+    out_dir = os.path.join("out", str(source_video_hash))
 
     if os.path.exists(out_dir):
         log.info(
@@ -39,7 +40,7 @@ def split_video_and_grab_screenshots(
     while start_time < duration:
         end_time = min(start_time + clip_length, duration)
         clip = video.subclipped(start_time, end_time)
-        clip_dir = os.path.join(out_dir, f"clip_{clip_index}")
+        clip_dir = os.path.join(out_dir, f"clip_{clip_index:04d}")
         if not os.path.exists(clip_dir):
             os.makedirs(clip_dir)
         clip_file_name = f"{clip_dir}/video.mp4"
