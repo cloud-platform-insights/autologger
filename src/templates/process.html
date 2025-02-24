@@ -22,16 +22,39 @@
     font-size: 1.25em;
   }
 
-  .raw_markdown {
+  .outputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1em;
+  }
+
+  #friction_html {
+    overflow-y: scroll;
+    max-height: 40em;
+    border:1px solid #ccc;
+  }
+
+  #friction_markdown {
     font-family:'Courier New', Courier, monospace;
     overflow-y: scroll;
     max-height: 40em;
-    background-color:lightgreen;
+    border: 1px solid #ccc;
     padding:1rem;
-    border:1px solid green;
     white-space: pre;
   }
 </style>
+
+<script>
+  function copyMarkdown() {
+    var markdown = document.getElementById('friction_markdown').innerText;
+    navigator.clipboard.writeText(markdown);
+    document.getElementById('copy_button').innerText = 'Copied!';
+    setTimeout(function() {
+      document.getElementById('copy_button').innerText = "click to copy";
+    }, 2000);
+  }
+</script>
+
 <nav>
   <h1>Autologger</h1>
   {% with messages = get_flashed_messages() %}
@@ -45,20 +68,18 @@
   {% endwith %}
 </nav>
 <main>
-  Processing file...
-  <div>
-    Source file: <pre>{{source_video_file}}</pre>
-  </div>
-  <div>
-    Media in Google Drive:
-    <ul>
-      <pre>
-        {{uploaded_media}}
-      </pre>
-    </ul>
-  </div>
-  <h2>Friction log (markdown)</h2>
-  <div class="raw_markdown">
-    {{friction_markdown}}
+  <div class="outputs">
+    <div>
+      <h2>HTML</h2>
+    </div>
+    <div>
+      <h2>Markdown <a id="copy_button" href="#" onclick="copyMarkdown()">[click to copy]</a></h2>
+    </div>
+    <div id="friction_html">
+      {{friction_html | safe}}
+    </div>
+    <div id="friction_markdown">
+      {{friction_markdown}}
+    </div>
   </div>
 </main>

@@ -7,3 +7,4 @@ moviepy>=2
 mdutils
 flask
 werkzeug
+markdown

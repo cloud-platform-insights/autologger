@@ -2,8 +2,7 @@
 
 from flask import Flask, request, redirect, render_template, session, url_for
 from mdutils.mdutils import MdUtils
-
-# from flask import flash, redirect
+import markdown
 
 import experimental.upload as upload
 import experimental.video_utils as video_utils
@@ -15,7 +14,6 @@ from config import Config
 
 import logging
 import sys
-import json
 import os
 import glob
 
@@ -67,7 +65,7 @@ def process_video():
     media_dir = video_utils.split_video_and_grab_screenshots(source_video_hash)
 
     # upload all media to GCS
-    uploaded_media = storage_utils.upload_dir(media_dir, gcs_bucket)
+    storage_utils.upload_dir(media_dir, gcs_bucket)
 
     print("🚧 Building your friction log")
 
@@ -115,12 +113,21 @@ def process_video():
                 )
             )
 
+    friction_html = markdown.markdown(fl.get_md_text())
+
     return render_template(
         "process.html",
-        source_video_file=f"{source_video_hash}.mp4",
-        media_dir=media_dir,
-        uploaded_media=json.dumps(uploaded_media, indent=6),
+        friction_html=friction_html,
         friction_markdown=fl.get_md_text(),
+    )
+
+
+# for dev purposes -- render the "proces" page witout actually
+# processing the video
+@app.route("/process_mock", methods=["GET"])
+def process_mock():
+    return render_template(
+        "process.html", friction_html="foo", friction_markdown="bar"
     )
 
 
