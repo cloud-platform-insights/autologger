@@ -1,9 +1,19 @@
-FROM python:alpine3.12
+FROM python:3.12-slim
+
+# Create and set the working directory
 WORKDIR /app
-# run pip install first b/c it's likely more stable than the app code
-COPY requirements.txt /app
-RUN pip install -r requirements.txt 
-COPY . /app
+
+# Copy only the requirements file first to leverage Docker caching
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire application code
+COPY . .
+
+# Expose the port your application will run on
 EXPOSE 5000
-ENTRYPOINT [ "python" ] 
-CMD [ "app.py" ] 
+
+# Specify the command to run on container start
+CMD ["python", "app.py"]
