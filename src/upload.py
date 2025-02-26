@@ -1,7 +1,6 @@
 from flask import flash, redirect
-from werkzeug.utils import secure_filename
 from flask import current_app as app
-import experimental.misc_utils as misc_utils
+import misc_utils
 
 import os
 
@@ -39,7 +38,6 @@ def process_upload_form(request):
             )
             return redirect("/")
         else:
-            filename = secure_filename(file.filename)
 
             file_destination = os.path.join(
                 app.config["UPLOAD_FOLDER"], filename
