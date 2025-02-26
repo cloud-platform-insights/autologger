@@ -131,7 +131,7 @@ def process_mock():
     )
 
 
-if __name__ == "autologger":
+if __name__ == "__main__":
     # this log message doesn't show up. Why not???
     app.logger.info("🤖 Beep boop. Autologger is starting up...")
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", debug=True, port=5000)
