@@ -2,8 +2,6 @@ import glob
 import os
 from google.cloud import storage
 
-client = storage.Client()
-
 
 def upload_dir(source_dir, destination_bucket):
     """
@@ -11,6 +9,8 @@ def upload_dir(source_dir, destination_bucket):
 
     Return a list of all object URIs
     """
+
+    client = storage.Client()
 
     rel_paths = glob.glob(source_dir + "/**", recursive=True)
     bucket = client.get_bucket(destination_bucket)

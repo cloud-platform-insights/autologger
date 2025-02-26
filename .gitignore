@@ -12,10 +12,6 @@ __pycache__/
 *include*
 *src/gcs_downloads/**
 
-# User-provided video files; keep the folder (and readme) but ignore its contents
-input/*
-!input/README.md
-
 # Google OAuth credentials
 *token.json
 *credentials.json
