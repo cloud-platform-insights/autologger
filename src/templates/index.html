@@ -1,100 +1,23 @@
-<!doctype html>
-<title>{% block title %}{% endblock %} - Autologger</title>
-<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-<style>
-  /* style overrides */
-  body,
-  main {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1em;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
-    margin-top: 2em;
-    margin-bottom: 0em;
-  }
-
-  h1 {
-    font-size: 2em;
-  }
-
-  h2 {
-    font-size: 1.25em;
-  }
-
-  #submittingpopover {
-    position: fixed;
-    top: 25vh;
-    left: 25vw;
-    width: 50vw;
-    height: fit-content;
-    padding: 2rem;
-    background-color: white;
-    color:black;
-    border-radius: 1em;
-    z-index: 1000;
-    display: none;
-  }
-
-  #submittingpopoverbackdrop {
-    background-color: rgba(0, 0, 0, 0.7);
-    transition: opacity 0.3s;
-    z-index: 999;
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    display: none;
-  }
-</style>
+{% extends "layout.html" %}
+{% block content %}
 <script>
   function openPopover() {
     document.getElementById('submittingpopover').style.display = 'block';
     document.getElementById('submittingpopoverbackdrop').style.display = 'block';
   }
 </script>
-<header>
-  <img src="{{ url_for('static', filename='header.png') }}">
-  <div>
-    ⚠️ EXPERIMENTAL -- @davidstanke is experimenting with turning autologger into a web service; this web page will be
-    the UI
-  </div>
-</header>
-<nav>
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  <ul class=flashes>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-  {% endwith %}
-</nav>
-<main>
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    Choose a video file (*.mp4): <input type="file" name="input_file" required>
-    <br>
-    GCP project with VertexAI enabled: <input type="text" name="gcp_project" required value="cpet-stanke-sandbox">
-    <br>
-    GCS storage bucket for intermediate artifacts: <input type="text" name="gcs_bucket" required value="autologger">
-    <br>
-    Generative Model to use: <select name="model_name">
-      <option selected>gemini-1.5-pro-preview-0514</option>
-      <option>gemini-2.0-flash-001</option>
-    </select>
-    <br>
-    <input type="submit" onclick="openPopover()"> <em>(it may take a while!)</em>
-  </form>
-</main>
-
-<div id="submittingpopover">
-  Processing... this may take a while! 🐌
-</div>
-<div id="submittingpopoverbackdrop"></div>
+<form action="/upload" method="post" enctype="multipart/form-data">
+  Choose a video file (*.mp4): <input type="file" name="input_file" required>
+  <br>
+  GCP project with VertexAI enabled: <input type="text" name="gcp_project" required value="cpet-stanke-sandbox">
+  <br>
+  GCS storage bucket for intermediate artifacts: <input type="text" name="gcs_bucket" required value="autologger">
+  <br>
+  Generative Model to use: <select name="model_name">
+    <option selected>gemini-1.5-pro-preview-0514</option>
+    <option>gemini-2.0-flash-001</option>
+  </select>
+  <br>
+  <input type="submit">
+</form>
+{% endblock %}

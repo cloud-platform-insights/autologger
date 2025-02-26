@@ -1,7 +1,10 @@
-from flask import flash, redirect
+from flask import flash
+from flask import redirect
+from flask import session
 from flask import current_app as app
-import misc_utils
 
+import misc_utils
+import storage_utils
 import os
 
 ALLOWED_EXTENSIONS = {"mp4"}
@@ -38,20 +41,23 @@ def process_upload_form(request):
             )
             return redirect("/")
         else:
-
-            file_destination = os.path.join(
-                app.config["UPLOAD_FOLDER"], filename
+            file_temp_path = os.path.join(
+                app.config["TEMP_FOLDER"], file.filename
             )
-            file.save(file_destination)
-            source_video_hash = misc_utils.file_hash(file_destination)
+            file.save(file_temp_path)
+            source_video_hash = misc_utils.file_hash(file_temp_path)
+
+            file_name = f"{source_video_hash}.mp4"
+
+            local_file_path = os.path.join(
+                app.config["TEMP_FOLDER"], file_name
+            )
 
             # rename the file to the hash
-            os.rename(
-                file_destination,
-                os.path.join(
-                    app.config["UPLOAD_FOLDER"], f"{source_video_hash}.mp4"
-                ),
-            )
+            os.rename(file_temp_path, local_file_path)
+
+            # put the file in GCS
+            storage_utils.upload_file(local_file_path, session["gcs_bucket"])
 
             return source_video_hash
 

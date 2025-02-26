@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+  #submittingpopover {
+    position: fixed;
+    top: 25vh;
+    left: 25vw;
+    width: 50vw;
+    height: fit-content;
+    padding: 2rem;
+    background-color: white;
+    color: black;
+    border-radius: 1em;
+    z-index: 1000;
+    display: none;
+    text-align: center;
+  }
+
+  #submittingpopoverbackdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+    transition: opacity 0.3s;
+    z-index: 999;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+  }
+</style>
+
+<script>
+  function openPopover() {
+    document.getElementById('submittingpopover').style.display = 'block';
+    document.getElementById('submittingpopoverbackdrop').style.display = 'block';
+  }
+</script>
+
+Video file {{source_video_hash}}.mp4 has been uploaded.
+<br><br>
+<a href="{{url_for('.process_video', v=source_video_hash)}}" onclick="openPopover()">Click to autologger it</a>
+
+<div id="submittingpopover">
+  Processing... this may take a while! 🐌
+</div>
+<div id="submittingpopoverbackdrop"></div>
+{% endblock %}

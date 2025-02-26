@@ -1,6 +1,6 @@
 # EXPERIMENTAL Web application based on autologger
 
-from flask import Flask, request, redirect, render_template, session, url_for
+from flask import Flask, request, render_template, session
 from mdutils.mdutils import MdUtils
 import markdown
 
@@ -38,14 +38,15 @@ def index():
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    source_video_hash = upload.process_upload_form(request)
 
     # set user's config choices to session
     session["gcs_bucket"] = request.form.get("gcs_bucket")
     session["gcp_project"] = request.form.get("gcp_project")
     session["model_name"] = request.form.get("model_name")
 
-    return redirect(url_for(".process_video", v=source_video_hash))
+    source_video_hash = upload.process_upload_form(request)
+
+    return render_template("upload.html", source_video_hash=source_video_hash)
 
 
 @app.route("/process", methods=["GET"])
@@ -112,6 +113,9 @@ def process_video():
                     "out/" + topic
                 )
             )
+
+    fl.new_header(level=1, title="Full Transcript")
+    fl.new_paragraph(transcript)
 
     friction_html = markdown.markdown(fl.get_md_text())
 

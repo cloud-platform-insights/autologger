@@ -1,6 +1,32 @@
 import glob
 import os
 from google.cloud import storage
+from flask import current_app as app
+
+
+def download_file_to_tempdir(blob_name, bucket_name):
+    """
+    Download a file from GCS
+    """
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    # save to working location
+    destination = os.path.join(app.config["TEMP_FOLDER"], blob_name)
+    blob.download_to_filename(destination)
+    return destination
+
+
+def upload_file(source_file, destination_bucket):
+    """
+    Upload a file to GCS"""
+    client = storage.Client()
+    bucket = client.get_bucket(destination_bucket)
+
+    file_name = os.path.basename(source_file)
+    blob = bucket.blob(file_name)
+    blob.upload_from_filename(source_file)
 
 
 def upload_dir(source_dir, destination_bucket):

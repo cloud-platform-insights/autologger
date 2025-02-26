@@ -1,27 +1,6 @@
-<!doctype html>
-<title>{% block title %}{% endblock %} - Autologger</title>
-<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+{% extends "layout.html" %}
+{% block content %}
 <style>
-  /* style overrides */
-  body, main {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1em;
-  }
-  
-  h1, h2, h3, h4, h5 {
-    margin-top: 2em ;
-    margin-bottom: 0em ;
-  }
-
-  h1 {
-    font-size: 2em;
-  }
-
-  h2 {
-    font-size: 1.25em;
-  }
-
   .outputs {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -31,15 +10,15 @@
   #friction_html {
     overflow-y: scroll;
     max-height: 40em;
-    border:1px solid #ccc;
+    border: 1px solid #ccc;
   }
 
   #friction_markdown {
-    font-family:'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace;
     overflow-y: scroll;
     max-height: 40em;
     border: 1px solid #ccc;
-    padding:1rem;
+    padding: 1rem;
     white-space: pre;
   }
 </style>
@@ -49,37 +28,23 @@
     var markdown = document.getElementById('friction_markdown').innerText;
     navigator.clipboard.writeText(markdown);
     document.getElementById('copy_button').innerText = 'Copied!';
-    setTimeout(function() {
+    setTimeout(function () {
       document.getElementById('copy_button').innerText = "click to copy";
     }, 2000);
   }
 </script>
-
-<nav>
-  <h1>Autologger</h1>
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-  {% endwith %}
-</nav>
-<main>
-  <div class="outputs">
-    <div>
-      <h2>HTML</h2>
-    </div>
-    <div>
-      <h2>Markdown <a id="copy_button" href="#" onclick="copyMarkdown()">[click to copy]</a></h2>
-    </div>
-    <div id="friction_html">
-      {{friction_html | safe}}
-    </div>
-    <div id="friction_markdown">
-      {{friction_markdown}}
-    </div>
+<div class="outputs">
+  <div>
+    <h2>HTML</h2>
   </div>
-</main>
+  <div>
+    <h2>Markdown <a id="copy_button" href="#" onclick="copyMarkdown()">[click to copy]</a></h2>
+  </div>
+  <div id="friction_html">
+    {{friction_html | safe}}
+  </div>
+  <div id="friction_markdown">
+    {{friction_markdown}}
+  </div>
+</div>
+{% endblock %}

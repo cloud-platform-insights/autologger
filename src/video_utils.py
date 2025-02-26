@@ -1,10 +1,11 @@
 import logging
 import os
-import tempfile
-from flask import current_app as app
+from flask import session
 
 from moviepy import VideoFileClip
 import imageio
+
+import storage_utils
 
 log = logging.getLogger("autologger.video_utils")
 
@@ -15,8 +16,8 @@ def split_video_and_grab_screenshots(source_video_hash, clip_length=120):
     Return the path to the parent folder containing all clips and screenshots.
     """
 
-    source_video_file = os.path.join(
-        app.config["UPLOAD_FOLDER"], f"{source_video_hash}.mp4"
+    source_video_file = storage_utils.download_file_to_tempdir(
+        f"{source_video_hash}.mp4", session["gcs_bucket"]
     )
 
     out_dir = os.path.join("out", str(source_video_hash))
