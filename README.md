@@ -28,12 +28,11 @@ _developed with Python 3.12; other versions may work but are not tested_
 
 ### Containerized execution
 TODO: allow passing project and bucket IDs as env vars
-TODO: mount ADC as docker volume
 TODO: change port to 8080
 
 ```sh
   docker build . -t autologger
-  docker run -d -p 5000:5000 autologger
+  docker run -v "$HOME/.config/gcloud/application_default_credentials.json":/gcp/creds.json --env GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json --env GOOGLE_CLOUD_PROJECT=autologger -d -p 5000:5000 autologger
 ```
 
 ### As a service
