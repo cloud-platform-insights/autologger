@@ -27,7 +27,7 @@ _developed with Python 3.12; other versions may work but are not tested_
 ```
 
 ### Containerized execution
-TODO: allow passing project and bucket IDs as env vars
+TODO: allow passing bucket IDs as env vars
 TODO: change port to 8080
 
 ```sh
