@@ -1,0 +1,6 @@
+out
+clips
+venv
+__pycache__
+bin
+*.json

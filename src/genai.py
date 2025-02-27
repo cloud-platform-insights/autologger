@@ -1,9 +1,5 @@
-import logging
-
 import vertexai.preview
 from vertexai.generative_models import GenerativeModel, Part
-
-log = logging.getLogger("autologger.genai")
 
 
 def gemini_process(gcs_clip_path, gcp_project, model_name, sys_inst):

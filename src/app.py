@@ -12,8 +12,6 @@ import genai
 
 from config import Config
 
-import logging
-import sys
 import os
 import glob
 
@@ -21,13 +19,6 @@ import glob
 app = Flask("autologger")
 app.secret_key = "KbbMp_HrXRRC6se.Je-y"  # TODO: move this into config
 app.config.from_object(Config)
-
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-)
-app.logger.addHandler(handler)
-app.logger.setLevel(logging.INFO)
 
 
 # Routes
@@ -73,7 +64,7 @@ def process_video():
     media_folders = sorted(next(os.walk(media_dir))[1])
 
     for folder in media_folders:
-        logging.info(
+        app.logger.info(
             "\nGenerating transcript and summary/sentiment with Gemini..."
         )
 
@@ -87,7 +78,7 @@ def process_video():
             model_name,
             app.config["SYSTEM_INSTRUCTIONS"],
         )
-        logging.info(
+        app.logger.info(
             "📝 Writing summary and screenshots to Friction Log markdown..."
         )
         fl.new_paragraph(summary)
@@ -105,10 +96,10 @@ def process_video():
                 text=f"![screenshot](data:image/png;base64,{image_as_base64})"
             )
 
-            logging.info("Writing final friction log to local markdown...")
+            app.logger.info("Writing final friction log to local markdown...")
             fl.create_md_file()
 
-            logging.info(
+            app.logger.info(
                 "🏁 Autologger complete. Output file at: {}.md".format(
                     "out/" + topic
                 )
@@ -137,5 +128,5 @@ def process_mock():
 
 if __name__ == "__main__":
     # this log message doesn't show up. Why not???
-    app.logger.info("🤖 Beep boop. Autologger is starting up...")
+    # app.logger.info("🤖 Beep boop. Autologger is starting up...")
     app.run(host="0.0.0.0", debug=True, port=5000)

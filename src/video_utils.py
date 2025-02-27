@@ -1,13 +1,11 @@
-import logging
 import os
 from flask import session
+from flask import current_app as app
 
 from moviepy import VideoFileClip
 import imageio
 
 import storage_utils
-
-log = logging.getLogger("autologger.video_utils")
 
 
 def split_video_and_grab_screenshots(source_video_hash, clip_length=120):
@@ -23,7 +21,7 @@ def split_video_and_grab_screenshots(source_video_hash, clip_length=120):
     out_dir = os.path.join("out", str(source_video_hash))
 
     if os.path.exists(out_dir):
-        log.info(
+        app.logger.info(
             f"skipping video split step because it has "
             f"already been done and results saved to {out_dir}"
         )
@@ -31,7 +29,7 @@ def split_video_and_grab_screenshots(source_video_hash, clip_length=120):
     else:
         os.makedirs(out_dir)
 
-    log.info(f"🎥 Breaking your video into {clip_length}-second clips.")
+    app.logger.info(f"🎥 Breaking your video into {clip_length}-second clips.")
 
     video = VideoFileClip(source_video_file)
     duration = video.duration

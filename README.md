@@ -31,12 +31,15 @@ TODO: allow passing project and bucket IDs as env vars
 TODO: change port to 8080
 
 ```sh
-  docker build . -t autologger
-  docker run -v "$HOME/.config/gcloud/application_default_credentials.json":/gcp/creds.json --env GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json --env GOOGLE_CLOUD_PROJECT=autologger -d -p 5000:5000 autologger
+  export CONTAINER_PATH=us-docker.pkg.dev/cpet-stanke-sandbox/autologger/autologger
+  docker build . -t $CONTAINER_PATH
+  docker run -v "$HOME/.config/gcloud/application_default_credentials.json":/gcp/creds.json --env GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json --env GOOGLE_CLOUD_PROJECT=autologger -d -p 5000:5000 $CONTAINER_PATH
 ```
 
 ### As a service
 TODO: allow passing bucket ID as env var (project should just use whatever project it's running in)
+
+⚠️ NOTE: to run in Cloud Run, it's recommended to build the container with Cloud Build, to avoid [OS compatibility issues](https://cloud.google.com/run/docs/troubleshooting#:~:text=Note%3A%20If%20you%20build%20your%20container%20image%20on%20a%20ARM%20based%20machine%2C%20then%20it%20might%20not%20work%20as%20expected%20when%20used%20with%20Cloud%20Run.).
 
 The built container can be run as a Cloud Run service.
 
