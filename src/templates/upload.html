@@ -38,7 +38,7 @@
 
 Video file {{source_video_hash}}.mp4 has been uploaded.
 <br><br>
-<a href="{{url_for('.process_video', v=source_video_hash)}}" onclick="openPopover()">Click to autologger it</a>
+<a href="{{url_for('.process_video', v=source_video_hash, m=model_name)}}" onclick="openPopover()">Click to autologger it</a>
 
 <div id="submittingpopover">
   Processing... this may take a while! 🐌

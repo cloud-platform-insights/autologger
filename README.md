@@ -23,17 +23,16 @@ _developed with Python 3.12; other versions may work but are not tested_
 ```python
   cd src
   pip install -r requirements.txt
-  flask run --debug
+  python app.py
 ```
 
 ### Containerized execution
 TODO: allow passing bucket IDs as env vars
-TODO: change port to 8080
 
 ```sh
   export CONTAINER_PATH=us-docker.pkg.dev/cpet-stanke-sandbox/autologger/autologger
   docker build . -t $CONTAINER_PATH
-  docker run -v "$HOME/.config/gcloud/application_default_credentials.json":/gcp/creds.json --env GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json --env GOOGLE_CLOUD_PROJECT=autologger -d -p 5000:5000 $CONTAINER_PATH
+  docker run -v "$HOME/.config/gcloud/application_default_credentials.json":/gcp/creds.json --env GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json --env GOOGLE_CLOUD_PROJECT=autologger -d -p 8080:8080 $CONTAINER_PATH
 ```
 
 ### As a service

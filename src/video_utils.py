@@ -1,5 +1,4 @@
 import os
-from flask import session
 from flask import current_app as app
 
 from moviepy import VideoFileClip
@@ -15,7 +14,7 @@ def split_video_and_grab_screenshots(source_video_hash, clip_length=120):
     """
 
     source_video_file = storage_utils.download_file_to_tempdir(
-        f"{source_video_hash}.mp4", session["gcs_bucket"]
+        f"{source_video_hash}.mp4", app.config["GCS_BUCKET"]
     )
 
     out_dir = os.path.join("out", str(source_video_hash))

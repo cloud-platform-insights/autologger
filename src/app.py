@@ -1,6 +1,6 @@
 # EXPERIMENTAL Web application based on autologger
 
-from flask import Flask, request, render_template, session
+from flask import Flask, request, render_template
 from mdutils.mdutils import MdUtils
 import markdown
 
@@ -30,26 +30,24 @@ def index():
 @app.route("/upload", methods=["POST"])
 def upload_file():
 
-    # set user's config choices to session
-    session["gcs_bucket"] = request.form.get("gcs_bucket")
-    session["gcp_project"] = request.form.get("gcp_project")
-    session["model_name"] = request.form.get("model_name")
-
     source_video_hash = upload.process_upload_form(request)
 
-    return render_template("upload.html", source_video_hash=source_video_hash)
+    return render_template(
+        "upload.html",
+        source_video_hash=source_video_hash,
+        model_name=request.form.get("model_name"),
+    )
 
 
 @app.route("/process", methods=["GET"])
 def process_video():
     source_video_hash = request.args.get("v")
+    model_name = request.args.get("m")
+    gcs_bucket = app.config["GCS_BUCKET"]
+    gcp_project = app.config["GCP_PROJECT"]
 
     # TODO: figure out a better title (can it be extracted from content?)
     topic = source_video_hash
-
-    gcs_bucket = session["gcs_bucket"]
-    gcp_project = session["gcp_project"]
-    model_name = session["model_name"]
 
     fl = MdUtils(file_name="out/" + source_video_hash, title=topic)
 
@@ -128,5 +126,5 @@ def process_mock():
 
 if __name__ == "__main__":
     # this log message doesn't show up. Why not???
-    # app.logger.info("🤖 Beep boop. Autologger is starting up...")
-    app.run(host="0.0.0.0", debug=True, port=5000)
+    app.logger.info("🤖 Beep boop. Autologger is starting up...")
+    app.run(host="0.0.0.0", debug=True, port=8080)

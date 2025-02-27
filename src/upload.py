@@ -1,6 +1,5 @@
 from flask import flash
 from flask import redirect
-from flask import session
 from flask import current_app as app
 
 import misc_utils
@@ -44,8 +43,13 @@ def process_upload_form(request):
             file_temp_path = os.path.join(
                 app.config["TEMP_FOLDER"], file.filename
             )
+
+            print(f"Saving uploaded file to {file_temp_path}")
+
             file.save(file_temp_path)
             source_video_hash = misc_utils.file_hash(file_temp_path)
+
+            print(f"File hash: {source_video_hash}")
 
             file_name = f"{source_video_hash}.mp4"
 
@@ -57,7 +61,9 @@ def process_upload_form(request):
             os.rename(file_temp_path, local_file_path)
 
             # put the file in GCS
-            storage_utils.upload_file(local_file_path, session["gcs_bucket"])
+            storage_utils.upload_file(
+                local_file_path, app.config["GCS_BUCKET"]
+            )
 
             return source_video_hash
 
